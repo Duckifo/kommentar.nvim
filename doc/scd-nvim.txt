@@ -1,0 +1,29 @@
+==============================================================================
+Simple Comment Divider (.nvim) - A Simple Comment Divider
+==============================================================================
+
+CONFIGURATION                                          *scd-config*
+
+Setting up `scd.nvim` is simple. When `setup()` is called, pass a table with a
+single key: `default_format`. This defines the divider style.
+
+Example:
+{
+    default_format = "<=%l>,< %!50%t %!50>,<=%l>"
+}
+
+### **Format Explanation**
+The formatting system uses **prefixes** to control spacing:
+
+| Prefix   | Meaning 															|
+|----------|--------------------------------------------------------------------|
+| `%l`     | Total length of the divider 										|
+| `%t`     | The label text 													|
+| `%!50`   | Repeats the character for 50% of available space (excluding label) |
+| `%?50`   | Repeats the character for 50% of the total divider length 			|
+
+Example output (for `len = 50`):
+
+<==================================================> 
+< 					text wooo :P 				   > 
+<==================================================>
