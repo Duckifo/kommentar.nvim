@@ -27,7 +27,7 @@ local smc_nvim = {}
 smc_nvim.setup = function(_Config)
 	---@type Config
 	local final_config = default_config
-	for key, value in default_config do
+	for key, value in pairs(default_config) do
 		if value == nil then goto continue end
 		if not final_config[key] then 
 			print("[smc.nvim]: non valid key `", key, "` found in passed config!") 
