@@ -140,10 +140,9 @@ end
 
 ---@param _Config Config Set the config
 local set_config = function(_Config)
-	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-
 	Config = _Config
 	vim.api.nvim_create_user_command("ScdCreateDivider", function(args)
+		local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 		local label = args[1]
 		if not args[1] then
 			vim.ui.input({ prompt = "Enter label > " }, function(input)
