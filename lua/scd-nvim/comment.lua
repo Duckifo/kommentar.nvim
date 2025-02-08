@@ -130,13 +130,20 @@ end
 ---@param label string
 ---@param length integer
 ---@param _Config Config optinal config
-local create_divider = function(label, length, _Config)
+---@param row integer
+---@param col integer
+---@param bufnr any
+local create_divider = function(label, length, _Config, row, col, bufnr)
 	local divider = parse(_Config.format or Config.format, length, label)
-	vim.api.nvim_put( split(divider, '\n'), 'c', true, true)
+
+	vim.api.nvim_buf_set_lines(bufnr, row - 1, col, false, split(divider, '\n'))
 end
 
 ---@param _Config Config Set the config
 local set_config = function(_Config)
+	local bufnr = vim.api.nvim_get_current_buf()
+	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+
 	Config = _Config
 	vim.api.nvim_create_user_command("ScdCreateDivider", function(args)
 		local label = args[1]
@@ -146,7 +153,7 @@ local set_config = function(_Config)
 			end)
 		end
 
-		create_divider(label, args[2] or Config.default_length, args[3] or {})
+		create_divider(label, args[2] or Config.default_length, args[3] or {}, row, col)
 	end, { nargs = '+' })
 end
 
