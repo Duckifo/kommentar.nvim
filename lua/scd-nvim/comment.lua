@@ -132,6 +132,7 @@ end
 ---@param _Config Config optinal config
 local create_divider = function(label, length, _Config)
 	local divider = parse(_Config.format or Config.format, length, label)
+	vim.api.nvim_put( split(divider, '\n'), 'c', true, true)
 end
 
 ---@param _Config Config Set the config
