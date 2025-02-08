@@ -132,16 +132,14 @@ end
 ---@param _Config Config optinal config
 ---@param row integer
 ---@param col integer
----@param bufnr any
-local create_divider = function(label, length, _Config, row, col, bufnr)
+local create_divider = function(label, length, _Config, row, col)
 	local divider = parse(_Config.format or Config.format, length, label)
-
+	local bufnr = vim.api.nvim_get_current_buf()
 	vim.api.nvim_buf_set_lines(bufnr, row - 1, col, false, split(divider, '\n'))
 end
 
 ---@param _Config Config Set the config
 local set_config = function(_Config)
-	local bufnr = vim.api.nvim_get_current_buf()
 	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 
 	Config = _Config
