@@ -22,9 +22,9 @@ local default_config = {
 	default_length = 50
 }
 
-local smc_nvim = {}
+local scd_nvim = {}
 ---@param _Config Config -- Configuration
-smc_nvim.setup = function(_Config)
+scd_nvim.setup = function(_Config)
 	---@type Config
 	local final_config = default_config
 	for key, value in pairs(default_config) do
@@ -38,9 +38,9 @@ smc_nvim.setup = function(_Config)
     	::continue::
 	end
 
-	require 'smc.nvim.comment'(final_config)
+	require 'scd-nvim.comment'(final_config)
 end
 
-smc_nvim.setup({})
+scd_nvim.setup({})
 
-return smc_nvim
+return scd_nvim
