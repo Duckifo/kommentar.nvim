@@ -1,14 +1,17 @@
--- Hayo :P
+--[[		Hayo there :P - Duckifo - 8/2/2025
+	Lookat the `:help` page if your lost
+]]
 
 ---@class Format_config
 ---@field prefix_character string The prefix character defaulted to `%`
 ---@field divider_character string The divider characyer defaulted to `,`
 
 ---@class Config
----@field format string The default format for dividers -- see more information about at :help smc.nvim-configuration
----@field format_prefixes Format_config The prefixes for the `format` allow changes in `prefix_char` & `divider_char` (WARNING: will break the default formats)
----@field comment_on_both_sides boolean Use comment string on both sides ( // <== hello ==> // ) or ( // <== hello ==> )
----@field default_length integer The default len
+---@field format? string The default format for dividers -- see more information about at :help smc.nvim-configuration
+---@field format_prefixes? Format_config The prefixes for the `format` allow changes in `prefix_char` & `divider_char` (WARNING: will break the default formats)
+---@field comment_on_both_sides? boolean Use comment string on both sides ( // <== hello ==> // ) or ( // <== hello ==> )
+---@field default_length? integer The default len
+---@field label_prompt? string The prompt that asks for label default `Enter label > `
 
 -- The default config
 ---@type Config
@@ -19,7 +22,8 @@ local default_config = {
 		divider_character = ","
 	},
 	comment_on_both_sides = true,
-	default_length = 50
+	default_length = 50,
+	label_prompt = "Enter label > "
 }
 
 local scd_nvim = {}
@@ -30,17 +34,20 @@ scd_nvim.setup = function(_Config)
 	for key, value in pairs(default_config) do
 		if value == nil then goto continue end
 		if not final_config[key] then 
-			print("[smc.nvim]: non valid key `", key, "` found in passed config!") 
+			print("[smc.nvim]: non valid key `", key, "` found in passed config!")
 			goto continue
 		end
-		
+
 		final_config[key] = value
     	::continue::
 	end
 
-	require 'scd-nvim.comment'(final_config)
+	require('scd-nvim.core')(final_config)
 end
 
-scd_nvim.setup({})
+---@return Formats
+scd_nvim.get_formats = function()
+	return require('scd-nvim.formats')
+end
 
 return scd_nvim
