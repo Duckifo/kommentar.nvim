@@ -12,12 +12,6 @@ local non_legal_characters = {
 	'%', ','
 }
 
--- operators 
----@type string[]
-local repeat_operators = {
-	'=', '/=', '!', '/!', '?'
-}
-
 --- Used to get index to closest closing parentheses
 ---@param line string
 ---@param i integer
@@ -34,14 +28,7 @@ local function get_endIndex_of_parameter(line, i)
 		end
 		end_index = end_index + 1
 	end
-	print(line:sub(i, end_index))
 	return end_index
-end
-
---- Takes param and checks if there is a valid repeat operator
----@param parameter string
-local function is_repeat_operator(parameter)
-	return includes(repeat_operators, split(parameter, ':')[1]:gsub(' ', ''))
 end
 
 --- Used to get amount of non constant characters in string
@@ -54,9 +41,6 @@ local function get_amount_nonConstant_chars(line)
 		if char == '%' then
 			local end_index = get_endIndex_of_parameter(line, i)
 			local amount = end_index - i
-			if is_repeat_operator(line:sub(i + 2, end_index - 1)) then
-				non_consts = non_consts + 1
-			end
 			non_consts = non_consts + amount
 		end
 	end
@@ -73,17 +57,16 @@ end
 ---@return string, integer
 local function parse_prefix(line, length, index, label, const_amount)
 	--[[ eg.
-		%(o) -> overflow - filled in with char before it if comment turns out non even
-			 	-> %(o1) runtime prefix used when overflow is required (dont use)
+		%(o:`char`) -> overflow - filled in with char
 		%(c:`@name`) -> constants
 			`len` -> length
 			`label` -> adds label to buffer
 			`/label` -> length of label
-		%(=:`x`)		-> rep char `x` many times
-		%(̣/=:`x`)		-> rep char `x` many percent of `len`
-		%(!:`x`)		-> rep char `x` many percent of `len` minus `label len`
-		%(/!:`x`)		-> rep char `x` many percent of `len` minus constant chars
-		%(?:`x`)		-> rep char `x` many percent of `len` minus `label len` minus constant chars
+		%(=:`x`:`char`)		-> rep char `x` many times
+		%(̣/=:`x`:`char`)		-> rep char `x` many percent of `len`
+		%(!:`x`:`char`)		-> rep char `x` many percent of `len` minus `label len`
+		%(/!:`x`:`char`)		-> rep char `x` many percent of `len` minus constant chars
+		%(?:`x`:`char`)		-> rep char `x` many percent of `len` minus `label len` minus constant chars
 	]]
 
 	-- init empty `buffer`
@@ -93,10 +76,14 @@ local function parse_prefix(line, length, index, label, const_amount)
 	local end_index = get_endIndex_of_parameter(line, index)
 
 	-- parameter -> the string inbetween `(*)`
-	local parameter = split(line:sub(index + 2, end_index - 1):gsub(' ', ''), ':')
-	local operator = parameter[1]
-	local value = parameter[2]
-	local percentage = (tonumber(value) or 0) / 100
+	local parameter = split(line:sub(index + 2, end_index - 1), ':')
+	local operator = parameter[1]:gsub(' ', '')
+	local arg2 = parameter[2] -- often refered to as value
+	local arg3 = parameter[3] -- often refered to as char
+	local percentage = (tonumber(arg2) or 0) / 100
+
+	-- TODO: error handling
+	assert(arg2 ~= nil, '`arg2` found nil found nil in prefix')
 
 	-- amount of times to repeat
 	local x = 0
@@ -117,7 +104,7 @@ local function parse_prefix(line, length, index, label, const_amount)
 	end
 
 	if operator == '=' then
-		x = tonumber(value)
+		x = tonumber(arg2)
 	end
 
 	-- not really consts :)
@@ -128,9 +115,9 @@ local function parse_prefix(line, length, index, label, const_amount)
 	}
 
 	if operator == 'c' then
-		if not const[value] then error('Non valid const, format') end
+		if not const[arg2] then error('Non valid const, format') end
 
-		local const_value = const[value]
+		local const_value = const[arg2]
 		if type(const_value) == 'number' then
 			x = const_value
 		elseif type(const_value) == 'string' then
@@ -139,7 +126,8 @@ local function parse_prefix(line, length, index, label, const_amount)
 		end
 	end
 
-	buffer = buffer .. line:sub(index - 1, index - 1):rep(math.ceil(x))
+	assert(not arg3 ~= nil, '`arg3` found nil -- often means (no character provided)')
+	buffer = buffer .. arg3:rep(math.ceil(x))
 	::continue::
 
 	-- return buffer and end_index
