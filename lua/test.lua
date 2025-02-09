@@ -7,3 +7,5 @@ vim.keymap.set('n', '<leader>gcd1', function()
 	vim.cmd('ScdCreateDivider 50;true;=%?50 < %t > =%?50')
 end)  
 
+
+
