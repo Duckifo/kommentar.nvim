@@ -5,6 +5,8 @@ local debug_mode = false
 -- import utils
 local split = require('scd-nvim.utils').split
 local includes = require('scd-nvim.utils').includes
+local report = require('scd-nvim.error').report
+local err_msg = require('scd-nvim.error').err_msgs
 
 -- characters that will be removed in format, and not dissplayed
 ---@type string[]
@@ -15,7 +17,7 @@ local non_legal_characters = {
 --- Used to get index to closest closing parentheses
 ---@param line string
 ---@param i integer
----@return integer
+---@return integer | boolean?
 local function get_endIndex_of_parameter(line, i)
 	-- find the `end index`, till closest closing parentheses
 	local end_index = i
@@ -24,7 +26,8 @@ local function get_endIndex_of_parameter(line, i)
 		if char == ')' then
 			break
 		elseif end_index - i > 25 then -- add killswitch
-			error("Found no coresponding closing parentheses for open parentheses, format")
+			-- return an error
+			return nil
 		end
 		end_index = end_index + 1
 	end
@@ -33,13 +36,16 @@ end
 
 --- Used to get amount of non constant characters in string
 ---@param line string
----@return integer non_consts
+---@return integer | nil
 local function get_amount_nonConstant_chars(line)
 	local non_consts = 0
-	for i=0, #line do
-		local char = line:sub(i,i)
+	for i = 0, #line do
+		local char = line:sub(i, i)
 		if char == '%' then
 			local end_index = get_endIndex_of_parameter(line, i)
+			if end_index == nil then
+				return nil
+			end
 			local amount = end_index - i
 			non_consts = non_consts + amount
 		end
@@ -75,6 +81,10 @@ local function parse_prefix(line, length, index, label, const_amount)
 	-- get end index
 	local end_index = get_endIndex_of_parameter(line, index)
 
+	if end_index == nil then
+		error(err_msg['NO_CLOSING_BRACKET'])
+	end
+
 	-- parameter -> the string inbetween `(*)`
 	local parameter = split(line:sub(index + 2, end_index - 1), ':')
 	local operator = parameter[1]:gsub(' ', '')
@@ -82,15 +92,22 @@ local function parse_prefix(line, length, index, label, const_amount)
 	local arg3 = parameter[3] -- often refered to as char
 	local percentage = (tonumber(arg2) or 0) / 100
 
-	-- TODO: error handling
-	assert(arg2 ~= nil, '`arg2` found nil found nil in prefix')
+	if operator == nil then
+		error(err_msg['NO_OPERATOR'])
+	end
+
+	if arg2 == nil then
+		error(err_msg['NOT_ENOUGH_ARG'] .. '\n ' .. (includes({ '/=', '=', '/!', '!', '?' }, operator) == true
+			and err_msg.HELP_NOT_ENOUGH_ARG['=/=!/!?']
+			or (operator == 'c' and err_msg.HELP_NOT_ENOUGH_ARG['c'] or err_msg.HELP_NOT_ENOUGH_ARG['o'])))
+	end
 
 	-- amount of times to repeat
 	local x = 0
 
 	if operator == '?' or '!' or '/!' then
 		x = operator == '/!'
-			and length * percentage -- `/!` uses
+			and length * percentage  -- `/!` uses
 			or (length - #label) * percentage -- `?` & `!` uses
 
 		-- for every constans char remove `percentage` * `1`
@@ -126,7 +143,10 @@ local function parse_prefix(line, length, index, label, const_amount)
 		end
 	end
 
-	assert(not arg3 ~= nil, '`arg3` found nil -- often means (no character provided)')
+	if arg3 == nil then
+		error(err_msg['NO_CHAR_INCLUDED'])
+	end
+
 	buffer = buffer .. arg3:rep(math.ceil(x))
 	::continue::
 
@@ -138,7 +158,7 @@ end
 ---@param format string
 ---@param length integer
 ---@param label string
----@return string
+---@return string | nil
 local function parse(format, length, label)
 	local buffer = ""
 
@@ -150,7 +170,7 @@ local function parse(format, length, label)
 	local timeout_i = -math.huge
 
 	for line_index, line in pairs(lines) do
-		local const_amount = #line - get_amount_nonConstant_chars(line)
+		local const_amount = #line - (get_amount_nonConstant_chars(line) or 0)
 		for char_index = 0, #line do
 			if char_index <= timeout_i and not debug_mode == true then
 				goto skip
@@ -160,8 +180,18 @@ local function parse(format, length, label)
 
 			-- check if prefix then get the string of that prefix
 			if char == Config.format_prefixes.prefix_character then
-				local prefix_buffer, end_index = parse_prefix(line, length, char_index, label, const_amount)
-				buffer = buffer .. prefix_buffer
+				local success, prefix_buffer, end_index = xpcall(function()
+					return parse_prefix(line, length, char_index, label, const_amount)
+				end, function(err)
+					report({ index = char_index, line = line, line_nr = line_index }, err)
+					return nil
+				end)
+
+				if success then
+					buffer = buffer .. prefix_buffer
+				else
+					return nil
+				end
 
 				-- Skip the characters that was just parced
 				timeout_i = end_index
@@ -205,6 +235,9 @@ end
 local create_divider = function(label, length, format)
 	-- Parse and get the `comment_buffer` (AKA: proccess the format to get the comment)
 	local comment_buffer = parse(format or Config.format, length, label)
+
+	-- return if failed
+	if comment_buffer == nil then return end
 
 	-- Get neovim buffer and current `colum` and `row`
 	local Current_nvim_buffer = vim.api.nvim_get_current_buf()
