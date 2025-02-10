@@ -164,7 +164,7 @@ local function parse(format, length, label)
 
 	-- split the format into `X` many lines
 	---@type string[]
-	local lines = split(format, Config.format_prefixes.divider_character)
+	local lines = split(format, ',')
 
 	-- index for wich iteration trough characters can be skipped
 	local timeout_i = -math.huge
@@ -179,7 +179,7 @@ local function parse(format, length, label)
 			local char = line:sub(char_index, char_index)
 
 			-- check if prefix then get the string of that prefix
-			if char == Config.format_prefixes.prefix_character then
+			if char == '%' then
 				local success, prefix_buffer, end_index = xpcall(function()
 					return parse_prefix(line, length, char_index, label, const_amount)
 				end, function(err)
