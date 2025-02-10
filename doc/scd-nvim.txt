@@ -1,4 +1,4 @@
-*scd-nvim.txt*                {scd-nvim}              last change: 2025-02-10
+*scd-nvim*                {scd-nvim}              last change: 2025-02-10
 =========================================================================
 Simple Comment Divider (.nvim) - A Simple Comment Divider
 =========================================================================
@@ -12,7 +12,7 @@ and avoid the ; and , character in the art, as ; is a command splitter while ,
 splits formating lines.
 
 =========================================================================
-                                                                  *general*
+                                                                  *scd-nvim.general*
 Simple comment divider (.nvim) or scd.nvim is a simple commenting tool that
 formats comments to mainly split up code. It is built to be customizable
 to a point where im to lazy to keep going. Its main thing going for it is
@@ -39,7 +39,7 @@ Lets try a more Nice format:
  learn more about the syntax at |format-syntax|
 
 =========================================================================
-                                                          *getting-started*
+                                                          *scd-nvim.getting-started*
 
 Getting started is as easy as any other plugin i hope :>. To setup and 
 configure `scd.nvim` just call:
@@ -55,12 +55,12 @@ NOTE: format_prefixes is "depricated" just to lazy to remove Xd
     label_prompt = "Enter label > " -- the prompt for entering label
 }
 
-                                                         *ScdCreateDivider*
+                                                         *:ScdCreateDivider*
 Now lets explore the one golden command ...
 :ScdCreateDivider <len>:int ; <ask-for-label>:bool ; <format>:string ; <debug-format>:bool
 
 =========================================================================
-                                                            *format-syntax*
+                                                            *scd-nvim.format-syntax*
 
 The format string is what defines the style of the comment, so the comment
 can scale, adjust to labels (or not), look different.  
@@ -97,14 +97,14 @@ lines are separated with `,` each line has its own constants, and non.
 This is well if you want to create multiline comments
 
 =========================================================================
-                                                       *formating-examples*
+                                                       *scd-nvim.formating-examples*
 Start with a simple one: 
 
         Use a bit            
         of overflow
         read on note
         down bellow        repeat on the second part aswell
-           ↓                ↓
+           ↓            	↓
 " ̣̣<%(?:50.05:~) %(c:label) %(?:50:~)> "
      ↑              ↑
      |        Add the label
@@ -125,7 +125,7 @@ Lets move on to a more complex one, a multiline one (3 lines):
     use `/!` to so
     remove consts and    
     not label                add label to buffer
-     ↓                                     ↓
+     ↓                                ↓
  <=%(/!:100:~)=> , <=%(?:50.05: )%(c:label)%(?:50: )=> , <=%(/!:100:~)=> 
                        ↑                                     ↑
         as before use `?` for the             repeat the the upper side
@@ -137,7 +137,6 @@ output will be:
  <=~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=> 
  <=                this is a multiline formated comment                => 
  <=~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=> 
-
 
 
 NOTE: You cant repeat a char by a float
