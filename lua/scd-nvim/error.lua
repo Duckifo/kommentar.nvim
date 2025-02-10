@@ -9,11 +9,11 @@ local err = {}
 ---@param t Prefix_t Table with error information
 ---@param msg string Message printed
 err.report = function(t, msg)
-	local output = 
+	local output = '\n' ..
 	' Error occured, during parsing of prefix on line:' .. t.line_nr .. ('\n'):rep(2) ..
 	' ' .. t.line .. ('\n'):rep(1) ..
 	' ' .. (' '):rep(t.index) .. '↑' .. '\n' ..
-	' ' .. msg:match(".*(%d+:.*)")
+	' ' .. msg:match(".*(%d+:.*)"):sub(3)
 
 	print(output)
 end
