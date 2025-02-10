@@ -8,7 +8,6 @@
 
 ---@class Config
 ---@field format? string The default format for dividers -- see more information about at :help smc.nvim-configuration
----@field format_prefixes? Format_config The prefixes for the `format` allow changes in `prefix_char` & `divider_char` (WARNING: will break the default formats)
 ---@field comment_on_both_sides? boolean Use comment string on both sides ( // <== hello ==> // ) or ( // <== hello ==> )
 ---@field default_length? integer The default len
 ---@field label_prompt? string The prompt that asks for label default `Enter label > `
@@ -16,11 +15,7 @@
 -- The default config
 ---@type Config
 local default_config = {
-	format = "<=%l>,< %!50%t %!50>,<=%l>",
-	format_prefixes = {
-		prefix_character = "%",
-		divider_character = ","
-	},
+	format = " <=:-%(?:50.05:~) ) %(c:label) ( %(?:50:~)-:=> ",
 	comment_on_both_sides = true,
 	default_length = 50,
 	label_prompt = "Enter label > "
