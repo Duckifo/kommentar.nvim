@@ -1,5 +1,4 @@
 -- Heyo there, this is just a file full with formats, looking for explaination do `:help scd.nvim-format`
--- WARNING, multiline comments have some problems, the prefixes are kinda handled like shiiiit. It is just tricky
 
 	--- A collections of hand crafter formats
 	--- Very nice B)
@@ -7,14 +6,10 @@
 	---`@duckifo`
 	---```lua
 		--- 50:
-		--- -- <=~~~~~~~~= label here =~~~~~~~~=> --
-		--- 50+:
-		--- -- <=~~~~~= looooonger label =~~~~~=> --
+		--- -- <=:-~~~~~~~~~~~~ ) @duckifo ( ~~~~~~~~~~~~-:=> --
 		--- 100:
-		--- -- <=~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~= label here =~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=> --
-		--- 100+:
-		--- -- <=~~~~~~~~~~~~~~~~~~~~= this is a waaaaaaay looooonger label =~~~~~~~~~~~~~~~~~~~~=> --
-	---```
+		--- -- <=:-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ) @duckifo ( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-:=> --
+ 	---```
 ---@field def_single string
 	---`@duckifo`
 	---```lua
@@ -25,9 +20,6 @@
 	---`@duckifo`
 	---```lua
 		--- 100:
-		--- -- <==:-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-:==> --
-		--- -- <=:~                     label here                      ~:=> --
-		--- -- <==:-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-:==> --
 	---```
 ---@field def_triple string
 
@@ -35,8 +27,13 @@
 ---@return Formats
 ---@type Formats
 return {
-	def_single = ' <=~%?50= %t =~%?50=> ',
-	free_single = ' <=:~ %?50%t %?50~:=> ',
-	def_triple = ' <==:-~%l-:==> , <=:~  %!50%t  %!50~:=> , <==:-~%l-:==> '
+	-- single lines
+	def_single = ' <=:-%(?:50.05:~) ) %(c:label) ( %(?:50:~)-:=> ',
+	free_single = '',
+
+	-- triple
+	def_triple = ''
 }
 
+-- (>- %(?:50:-) %(c:label) %(?:50:-) -<) 
+-- (>- --------------- hello! --------------- -<) --
