@@ -254,9 +254,9 @@ local set_config = function(_Config)
 
 	-- Create new user command, for creating new divider at current cursor.pos and buffer
 	vim.api.nvim_create_user_command("ScdCreateDivider", function(args_string)
-		--[[ Args:	for overiding setup options
+		--[[ Args:
 			 [1] -> len:			int
-			 [2] -> ask for label: 	bool
+			 [2] -> label: 			string
 			 [3] -> format: 		string
 			 [4] -> debug:			bool
 		]]
@@ -267,19 +267,10 @@ local set_config = function(_Config)
 		---@type integer
 		local length = tonumber(args[1]) or Config.default_length or 100
 		local format = args[3]:lower() == 'x' and Config.format or args[3]
+		local label = args[2]
 
 		debug_mode = args[4] == 'true' or false
 
-		-- init empty label
-		local label = ''
-
-		-- check if `ask for label` flag is true
-		if args[2] == "true" then
-			-- ask for label
-			vim.ui.input({ prompt = Config.label_prompt }, function(input)
-				label = input
-			end)
-		end
 
 		-- Create divider
 		create_divider(label, length, format)
