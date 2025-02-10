@@ -1,18 +1,18 @@
-*scd-nvim.txt*				{scd-nvim}			  last change: 2025-02-10
+*scd-nvim.txt*                {scd-nvim}              last change: 2025-02-10
 =========================================================================
 Simple Comment Divider (.nvim) - A Simple Comment Divider
 =========================================================================
 
 WARNING:
 So there is a small issue with labels containing characters like
-	"åäö, øæ, àèñ ... and so on"
+    "åäö, øæ, àèñ ... and so on"
 note that special characters like "([{!?.-~*^ ..." still works
 
 and avoid the ; and , character in the art, as ; is a command splitter while ,
 splits formating lines.
 
 =========================================================================
-																  *general*
+                                                                  *general*
 Simple comment divider (.nvim) or scd.nvim is a simple commenting tool that
 formats comments to mainly split up code. It is built to be customizable
 to a point where im to lazy to keep going. Its main thing going for it is
@@ -20,7 +20,7 @@ the `format` all comments are built uppon, it lets comments be scalable,
 customizable, editable and look really nice (im my opinion).
 
 Not going in to deep it takes a format eg: (a really simple ugly one)
-			"<%(?:50:=) %(c:label) %(?:50:=)>"
+            "<%(?:50:=) %(c:label) %(?:50:=)>"
 This might look like bs to you, but it makes sense, atleast for me :>
 The output of the prompt above is a scalable comment divider with a editable
 label, output:
@@ -39,28 +39,28 @@ Lets try a more Nice format:
  learn more about the syntax at |format-syntax|
 
 =========================================================================
-													      *getting-started*
+                                                          *getting-started*
 
 Getting started is as easy as any other plugin i hope :>. To setup and 
 configure `scd.nvim` just call:
 
-	`require('scd-nvim').setup({})`
+    `require('scd-nvim').setup({})`
 
 The setup parameter has a few `keys` so lets go over them:
 NOTE: format_prefixes is "depricated" just to lazy to remove Xd
 {
-	format = "" -- the default foramt passed when no format is passed
-	comment_on_both_sided = true -- should commentstring be on both sides
-	default_length = 50 -- default length of comment if none passed
-	label_prompt = "Enter label > " -- the prompt for entering label
+    format = "" -- the default foramt passed when no format is passed
+    comment_on_both_sided = true -- should commentstring be on both sides
+    default_length = 50 -- default length of comment if none passed
+    label_prompt = "Enter label > " -- the prompt for entering label
 }
 
-														 *ScdCreateDivider*
+                                                         *ScdCreateDivider*
 Now lets explore the one golden command ...
 :ScdCreateDivider <len>:int ; <ask-for-label>:bool ; <format>:string ; <debug-format>:bool
 
 =========================================================================
-															*format-syntax*
+                                                            *format-syntax*
 
 The format string is what defines the style of the comment, so the comment
 can scale, adjust to labels (or not), look different.  
@@ -71,21 +71,21 @@ things are separated by `:` . First up in the param comes the
 `operator` there are 6 operators in total, 5 for letter repetision and
 one to get values. 
 
-	- %(=:`x`:`chars`) -> repeates the `chars` `x` many times
-	- %(/=:`x`:`chars`) -> repeates the chars x many procent out of length
-	- %(!:`x`:`chars`) -> repeates the chars x many procent out of length minus label length
-	- %(/!:`x`:`chars`) -> repeates the chars x mant procent out of length minus constant chars
-	- %(?:`x`:`chars`) -> repeates the chars x many procent out of leanth minus label length minus constant chars
-	- %(c:`name`:`chars`?) -> "constants", chars not always needed, only if value ends up as int
-		-  `len` -> length no questions asked 			(   char   )
-		-  `label` -> label text, adds label to buffer	(  buffer  )
-		-  `/label` -> length of label					(   char   )
+    - %(=:`x`:`chars`) -> repeates the `chars` `x` many times
+    - %(/=:`x`:`chars`) -> repeates the chars x many procent out of length
+    - %(!:`x`:`chars`) -> repeates the chars x many procent out of length minus label length
+    - %(/!:`x`:`chars`) -> repeates the chars x mant procent out of length minus constant chars
+    - %(?:`x`:`chars`) -> repeates the chars x many procent out of leanth minus label length minus constant chars
+    - %(c:`name`:`chars`?) -> "constants", chars not always needed, only if value ends up as int
+        -  `len` -> length no questions asked             (   char   )
+        -  `label` -> label text, adds label to buffer    (  buffer  )
+        -  `/label` -> length of label                    (   char   )
 
 `X` can be for either repeating my procentage or right of. The thing being
 repeated is the char. So:
-	- `%(=:10:a)` would result in 10 a:s
-	- %(c:label) would result in the label being written to the buffer
-	- ...
+    - `%(=:10:a)` would result in 10 a:s
+    - %(c:label) would result in the label being written to the buffer
+    - ...
 
 The syntax is built on a princable that theres `constant_chars` and
 `non_constand_chars`, constant_chars `constant_chars` are the "free"
@@ -93,18 +93,22 @@ characters in the string eg:
 "aaa%(=:3:b)" -> 3 constant_chars even tough the output is "aaabbb" (6)
 this is becouse 3 of those chars were non_constant AKA got "generated" during parsing.
 
-													   *formating-examples*
-Start with a simple one:
+lines are separated with `,` each line has its own constants, and non.
+This is well if you want to create multiline comments
 
-		Use a bit			
-		of overflow
-		read on note
-		down bellow		repeat on the second part aswell
-		   ↓				↓
+=========================================================================
+                                                       *formating-examples*
+Start with a simple one: 
+
+        Use a bit            
+        of overflow
+        read on note
+        down bellow        repeat on the second part aswell
+           ↓                ↓
 " ̣̣<%(?:50.05:~) %(c:label) %(?:50:~)> "
-	 ↑			  ↑
-	 |		Add the label
-	 |
+     ↑              ↑
+     |        Add the label
+     |
 Use ? to remove other
 characters and leave room
 for the label. optionally 
@@ -114,7 +118,29 @@ what you inputed.
 output will be: 
  <======================= hello this is a label =======================> 
 
-NOTE: Not to state the obvius but you cant repeat a char by a float
+
+Lets move on to a more complex one, a multiline one (3 lines):
+    
+    on the upper side
+    use `/!` to so
+    remove consts and    
+    not label                add label to buffer
+     ↓                                     ↓
+ <=%(/!:100:~)=> , <=%(?:50.05: )%(c:label)%(?:50: )=> , <=%(/!:100:~)=> 
+                       ↑                                     ↑
+        as before use `?` for the             repeat the the upper side
+        labels format, to remove            for the bottom side.
+        consts and the label
+                            
+        
+output will be:
+ <=~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=> 
+ <=                this is a multiline formated comment                => 
+ <=~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=> 
+
+
+
+NOTE: You cant repeat a char by a float
 so there are inperfections, to reduce this (not remove) use some "overflow"
 if your doing, like a three line comment. So instead of putting 50% on
 the label line putting 50.05% or 50.01%
