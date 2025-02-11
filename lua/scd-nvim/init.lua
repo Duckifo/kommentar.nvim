@@ -1,5 +1,5 @@
 --[[		Hayo there :P - Duckifo - 8/2/2025
-	Lookat the `:help` page if your lost
+		Lookat the `:help` page if your lost
 ]]
 
 ---@class Format_config
@@ -37,12 +37,9 @@ scd_nvim.setup = function(_Config)
     	::continue::
 	end
 
+	-- init `core` and `commands`
 	require('scd-nvim.core')(final_config)
-end
-
----@return Formats
-scd_nvim.get_formats = function()
-	return require('scd-nvim.formats')
+	require('scd-nvim.commands')
 end
 
 return scd_nvim
