@@ -229,10 +229,24 @@ local function parse(format, length, label)
 	return buffer
 end
 
+
+local core = {}
+
+-- The init function to set the cofig
+---@param _Config Config Set the config
+core.setup = function(_Config)
+	Config = _Config
+end
+
 ---@param label string -> the label of the divider `%t`
 ---@param length integer -> the length of the divider `%l`
 ---@param format string -> optional format
-local create_divider = function(label, length, format)
+core.create_divider = function(label, length, format)
+	-- make sure arguments are set well and done
+	label = label or ''
+	length = length or Config.default_length
+	format = format or Config.format
+
 	-- Parse and get the `comment_buffer` (AKA: proccess the format to get the comment)
 	local comment_buffer = parse(format or Config.format, length, label)
 
@@ -243,38 +257,8 @@ local create_divider = function(label, length, format)
 	local Current_nvim_buffer = vim.api.nvim_get_current_buf()
 	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 
-	-- write the `comment_buffer` to neovims buffer at current `row` and `colum`
+	-- write the `comment_buffer` to neovims buffer at current `row`
 	vim.api.nvim_buf_set_lines(Current_nvim_buffer, row, row, false, split(comment_buffer, '\n'))
 end
 
--- The init function to set the cofig, and create the `ScdCreateDivider` command
----@param _Config Config Set the config
-local set_config = function(_Config)
-	Config = _Config
-
-	-- Create new user command, for creating new divider at current cursor.pos and buffer
-	vim.api.nvim_create_user_command("ScdCreateDivider", function(args_string)
-		--[[ Args:
-			 [1] -> len:			int
-			 [2] -> label: 			string
-			 [3] -> format: 		string
-			 [4] -> debug:			bool
-		]]
-
-		-- make args into an table split by `;`
-		local args = split(args_string.args, ';')
-
-		---@type integer
-		local length = tonumber(args[1]) or Config.default_length or 100
-		local format = args[3]:lower() == 'x' and Config.format or args[3]
-		local label = args[2]
-
-		debug_mode = args[4] == 'true' or false
-
-
-		-- Create divider
-		create_divider(label, length, format)
-	end, { nargs = '*' })
-end
-
-return set_config
+return core

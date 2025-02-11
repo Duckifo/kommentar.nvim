@@ -38,7 +38,7 @@ scd_nvim.setup = function(_Config)
 	end
 
 	-- init `core` and `commands`
-	require('scd-nvim.core')(final_config)
+	require('scd-nvim.core').setup(final_config)
 	require('scd-nvim.commands')
 end
 
