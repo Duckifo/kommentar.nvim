@@ -1,234 +1,176 @@
 ---@type Config
 local Config = {}
-local debug_mode = false
 
 -- import utils
-local split = require('scd-nvim.utils').split
-local includes = require('scd-nvim.utils').includes
-local report = require('scd-nvim.error').report
-local err_msg = require('scd-nvim.error').err_msgs
+local split = require('scd-nvim.lib.utils').split
+local find_closing_paren = require('scd-nvim.lib.utils').find_closing_paren
+local report = require('scd-nvim.lib.error').report
+local err_msg = require('scd-nvim.lib.error').err_msgs
 
--- characters that will be removed in format, and not dissplayed
----@type string[]
-local non_legal_characters = {
-	'%', ','
-}
+local string_len = vim.fn.strchars
+local operator_functions = require('scd-nvim.operators')
 
---- Used to get index to closest closing parentheses
----@param line string
----@param i integer
----@return integer | boolean?
-local function get_endIndex_of_parameter(line, i)
-	-- find the `end index`, till closest closing parentheses
-	local end_index = i
-	while true do
-		local char = line:sub(end_index, end_index)
-		if char == ')' then
-			break
-		elseif end_index - i > 25 then -- add killswitch
-			-- return an error
-			return nil
+
+function dump(o)
+	if type(o) == 'table' then
+		local s = '{ '
+		for k, v in pairs(o) do
+			if type(k) ~= 'number' then k = '"' .. k .. '"' end
+			s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
 		end
-		end_index = end_index + 1
+		return s .. '} '
+	else
+		return tostring(o)
 	end
-	return end_index
 end
 
---- Used to get amount of non constant characters in string
----@param line string
----@return integer | nil
-local function get_amount_nonConstant_chars(line)
-	local non_consts = 0
-	for i = 0, #line do
-		local char = line:sub(i, i)
-		if char == '%' then
-			local end_index = get_endIndex_of_parameter(line, i)
-			if end_index == nil then
-				return nil
-			end
-			local amount = end_index - i
-			non_consts = non_consts + amount
-		end
-	end
+---@class Proccess_Opt
+---@field label string
+---@field length integer
+---@field consts table
 
-	return non_consts
-end
+--- Proccess format by the options passed
+--- @param format string Format to use
+--- @param opt Proccess_Opt
+function Proccess_pattern(format, opt)
+	-- Start by `Tokenizing` format
+	-- (Spliting it up before being parsed)
 
---[[ Used to get the values from `prefixes` ]]
----@param line string
----@param length integer len of line
----@param index integer index of current char
----@param label string
----@param const_amount integer
----@return string, integer
-local function parse_prefix(line, length, index, label, const_amount)
-	--[[ eg.
-		%(o:`char`) -> overflow - filled in with char
-		%(c:`@name`) -> constants
-			`len` -> length
-			`label` -> adds label to buffer
-			`/label` -> length of label
-		%(=:`x`:`char`)		-> rep char `x` many times
-		%(̣/=:`x`:`char`)		-> rep char `x` many percent of `len`
-		%(!:`x`:`char`)		-> rep char `x` many percent of `len` minus `label len`
-		%(/!:`x`:`char`)		-> rep char `x` many percent of `len` minus constant chars
-		%(?:`x`:`char`)		-> rep char `x` many percent of `len` minus `label len` minus constant chars
+	-- Format gets split up into a table separated by `%(param)`
+	-- tokenized_format: {'<==','%(param)','==>'}
+
+
+	-- Start by spliting format into lines separated by `,`
+	local format_lines = split(format, ',')
+
+	-- For parsing later
+	-- Amount of characters that are not added with this proccess
+	local constant_characters = 0
+
+	-- `tokenized_buffer` the output of Tokenizing format:
+	--[[ example
+		{
+			{'<==','%(param),'==>'},
+			.. next tokenized format line
+		}	
 	]]
+	---@type string[][]
+	local tokenized_buffer = {}
 
-	-- init empty `buffer`
-	local buffer = ""
+	for format_idx, format_line in pairs(format_lines) do
+		-- the local buffer for every `format line`
+		local tokenized_line_buffer = {}
+		tokenized_line_buffer[1] = ''
 
-	-- get end index
-	local end_index = get_endIndex_of_parameter(line, index)
+		-- if next_start_idx >= char_idx skip
+		-- Used to skip param chars
+		local next_start_idx = -math.huge
 
-	if end_index == nil then
-		error(err_msg['NO_CLOSING_BRACKET'])
-	end
-
-	-- parameter -> the string inbetween `(*)`
-	local parameter = split(line:sub(index + 2, end_index - 1), ':')
-	local operator = parameter[1]:gsub(' ', '')
-	local arg2 = parameter[2] -- often refered to as value
-	local arg3 = parameter[3] -- often refered to as char
-	local percentage = (tonumber(arg2) or 0) / 100
-
-	if operator == nil then
-		error(err_msg['NO_OPERATOR'])
-	end
-
-	if arg2 == nil then
-		error(err_msg['NOT_ENOUGH_ARG'] .. '\n ' .. (includes({ '/=', '=', '/!', '!', '?' }, operator) == true
-			and err_msg.HELP_NOT_ENOUGH_ARG['=/=!/!?']
-			or (operator == 'c' and err_msg.HELP_NOT_ENOUGH_ARG['c'] or err_msg.HELP_NOT_ENOUGH_ARG['o'])))
-	end
-
-	-- amount of times to repeat
-	local x = 0
-
-	if operator == '?' or '!' or '/!' then
-		x = operator == '/!'
-			and length * percentage  -- `/!` uses
-			or (length - #label) * percentage -- `?` & `!` uses
-
-		-- for every constans char remove `percentage` * `1`
-		if operator == '?' or operator == '/!' then
-			x = x - const_amount * percentage
-		end
-	end
-
-	if operator == '/=' then
-		x = length * percentage
-	end
-
-	if operator == '=' then
-		x = tonumber(arg2)
-	end
-
-	-- not really consts :)
-	local const = {
-		['len'] = length,
-		['label'] = label,
-		['/label'] = #label
-	}
-
-	if operator == 'c' then
-		if not const[arg2] then error('Non valid const, format') end
-
-		local const_value = const[arg2]
-		if type(const_value) == 'number' then
-			x = const_value
-		elseif type(const_value) == 'string' then
-			buffer = buffer .. const_value
-			goto continue
-		end
-	end
-
-	if arg3 == nil then
-		error(err_msg['NO_CHAR_INCLUDED'])
-	end
-
-	buffer = buffer .. arg3:rep(math.ceil(x))
-	::continue::
-
-	-- return buffer and end_index
-	return buffer, end_index
-end
-
--- Used to get the `comment buffer` from the `format`
----@param format string
----@param length integer
----@param label string
----@return string | nil
-local function parse(format, length, label)
-	local buffer = ""
-
-	-- split the format into `X` many lines
-	---@type string[]
-	local lines = split(format, ',')
-
-	-- index for wich iteration trough characters can be skipped
-	local timeout_i = -math.huge
-
-	for line_index, line in pairs(lines) do
-		local const_amount = #line - (get_amount_nonConstant_chars(line) or 0)
-		for char_index = 0, #line do
-			if char_index <= timeout_i and not debug_mode == true then
-				goto skip
-			end
-
-			local char = line:sub(char_index, char_index)
-
-			-- check if prefix then get the string of that prefix
-			if char == '%' then
-				local success, prefix_buffer, end_index = xpcall(function()
-					return parse_prefix(line, length, char_index, label, const_amount)
-				end, function(err)
-					report({ index = char_index, line = line, line_nr = line_index }, err)
-					return nil
-				end)
-
-				if success then
-					buffer = buffer .. prefix_buffer
-				else
-					return nil
-				end
-
-				-- Skip the characters that was just parced
-				timeout_i = end_index
+		for char_idx = 1, string_len(format_line) do
+			-- skip param characters
+			if next_start_idx >= char_idx then
 				goto continue
 			end
 
-			-- check if character is legal
-			if includes(non_legal_characters, char) then goto continue end
+			local char = format_line:sub(char_idx, char_idx)
 
-			-- add character to buffer
-			buffer = buffer .. char
-
-			::continue::
-
-			-- always check & add comment string if needed
-			if char_index == #line then
-				-- Is end of line, if `comment_on_both_sides` flag then add commentstring
-				if Config.comment_on_both_sides then
-					buffer = buffer .. vim.bo.commentstring:gsub(' %%s', '')
-				end
-
-				-- add newline `\n` to the end of buffer
-				buffer = buffer .. '\n'
-			elseif char_index == 0 then
-				-- Is start of line, add commentstring to buffer
-				buffer = buffer .. vim.bo.commentstring:gsub(' %%s', '')
+			if char ~= '%' then
+				-- count amount of constant_characters
+				constant_characters = constant_characters + 1
+				-- add char to buffer
+				tokenized_line_buffer[#tokenized_line_buffer] = tokenized_line_buffer[#tokenized_line_buffer] .. char
+				goto continue
 			end
 
-			::skip::
+			-- TODO: check if next char is start paren & throw error if not
+
+			local start_paren_idx = char_idx + 1
+			local end_paren_idx = find_closing_paren(start_paren_idx, format_line)
+
+			-- To skip the param characters so they dont get added to buffer as constant_characters
+			next_start_idx = end_paren_idx
+
+			-- add param to buffer
+			local param = format_line:sub(char_idx, end_paren_idx)
+			tokenized_line_buffer[#tokenized_line_buffer + 1] = param
+
+			-- create buffer for next
+			tokenized_line_buffer[#tokenized_line_buffer + 2] = ''
+
+			::continue::
 		end
-		timeout_i = -math.huge
+		tokenized_buffer[format_idx] = tokenized_line_buffer
 	end
 
-	-- return the buffer
+	-- Get the commentstring or
+	local comment_string = vim.bo.commentstring:gsub(' %%s', '')
+
+	-- Parsing format && Evaluating
+	-- Turn the tokenized_buffer into the finnished string now!
+	local buffer = ''
+	for i, tokenized_line in pairs(tokenized_buffer) do
+		-- add commentstring to buffer
+		buffer = comment_string .. buffer
+
+		--[[ token format example:
+			{'====','%(param)','abcd'}
+		]]
+		for j, token in pairs(tokenized_line) do
+			-- skip if token cant be parsed
+
+			if token:sub(1, 1) ~= '%' then
+				buffer = buffer .. token
+				goto continue
+			end
+
+			---@type Error_info
+			local error_info = {
+				index = string_len(buffer) + 2,
+				line_nr = i,
+				line = format_lines[i]
+			}
+
+			-- < Evaluate / Transform >
+
+			-- Get the values passed in param, and split by ':' into a table
+			local parameter = split(token:match('%((.-)%)'), ':')
+			local operator = parameter[1]
+
+			-- Check if operator is existant
+			if operator_functions[operator] == nil then
+				report(error_info, err_msg['NON_VALID_OPERATOR'])
+				return
+			end
+
+			---@type Operators_opt
+			local operator_opt = {
+				const_chars = constant_characters,
+				pro_opt = opt
+			}
+
+			-- Call operators function
+			local result, err = operator_functions[operator]( parameter, operator_opt )
+
+			if result == nil then
+				report(error_info, err or 'unknown error')
+				return
+			end
+
+			-- Write output to buffer
+			buffer = buffer .. result
+
+			::continue::
+		end
+		-- Add comment on end if option is true
+		if Config.comment_on_both_sides then
+			buffer = buffer .. comment_string
+		end
+		-- Add new line
+		buffer = buffer .. '\n'
+	end
+
 	return buffer
 end
-
 
 local core = {}
 
@@ -238,17 +180,32 @@ core.setup = function(_Config)
 	Config = _Config
 end
 
----@param label string -> the label of the divider `%t`
----@param length integer -> the length of the divider `%l`
----@param format string -> optional format
+---@param label string
+---@param length integer
+---@param format string
 core.create_divider = function(label, length, format)
 	-- make sure arguments are set well and done
 	label = label or ''
 	length = length or Config.default_length
 	format = format or Config.format
 
-	-- Parse and get the `comment_buffer` (AKA: proccess the format to get the comment)
-	local comment_buffer = parse(format or Config.format, length, label)
+	-- Can be used in format by doing %(c:`name`)
+	-- Types can be string or int
+	local constants = {
+		['len'] = length,
+		['label'] = label,
+		['/label'] = string_len(label)
+	}
+
+	---@type Proccess_Opt
+	local opt = {
+		label = label,
+		length = length,
+		consts = constants
+	}
+
+	-- Proccess and get the `comment_buffer`
+	local comment_buffer = Proccess_pattern(format, opt)
 
 	-- return if failed
 	if comment_buffer == nil then return end
