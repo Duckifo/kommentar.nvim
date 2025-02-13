@@ -1,0 +1,7 @@
+:ScdCreateDivider	doc/scd-nvim.txt	/*:ScdCreateDivider*
+scd-nvim.format-syntax	doc/scd-nvim.txt	/*scd-nvim.format-syntax*
+scd-nvim.formating-examples	doc/scd-nvim.txt	/*scd-nvim.formating-examples*
+scd-nvim.general	doc/scd-nvim.txt	/*scd-nvim.general*
+scd-nvim.getting-started	doc/scd-nvim.txt	/*scd-nvim.getting-started*
+scd-nvim.setup-custom-formats	doc/scd-nvim.txt	/*scd-nvim.setup-custom-formats*
+scd-nvim.txt	doc/scd-nvim.txt	/*scd-nvim.txt*

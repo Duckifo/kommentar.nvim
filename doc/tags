@@ -4,3 +4,4 @@ scd-nvim.format-syntax	scd-nvim.txt	/*scd-nvim.format-syntax*
 scd-nvim.formating-examples	scd-nvim.txt	/*scd-nvim.formating-examples*
 scd-nvim.general	scd-nvim.txt	/*scd-nvim.general*
 scd-nvim.getting-started	scd-nvim.txt	/*scd-nvim.getting-started*
+scd-nvim.setup-custom-formats	scd-nvim.txt	/*scd-nvim.setup-custom-formats*

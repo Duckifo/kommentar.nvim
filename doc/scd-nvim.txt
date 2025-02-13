@@ -1,29 +1,23 @@
-*scd-nvim*                {scd-nvim}              last change: 2025-02-10
+*scd-nvim.txt*                                     last updated: 2025-02-13
 =========================================================================
 Simple Comment Divider (.nvim) - A Simple Comment Divider
 =========================================================================
 
-WARNING:
-So there is a small issue with labels containing characters like
-    "åäö, øæ, àèñ ... and so on"
-note that special characters like "([{!?.-~*^ ..." still works
-
-and avoid the ; and , character in the art, as ; is a command splitter while ,
-splits formating lines.
+(>- ----------<=>---------- scd.nvim @duckifo ----------<=>---------- -<)
 
 =========================================================================
-                                						 *scd-nvim.general*
-Simple comment divider (.nvim) or scd.nvim is a simple commenting tool that
-formats comments to mainly split up code. It is built to be customizable
-to a point where im to lazy to keep going. Its main thing going for it is
-the `format` all comments are built uppon, it lets comments be scalable,
-customizable, editable and look really nice (im my opinion).
+                                                         *scd-nvim.general*
+Simple comment divider (.nvim) or scd.nvim is a simple commenting tool 
+that formats comments to mainly split up code. It is built to be 
+customizable to a point where im to lazy to keep going. Its main thing 
+going for it is the `format` that all comments are built uppon, it lets 
+comments be scalable, customizable, editable and look 
+really nice (im my opinion).
 
-Not going in to deep it takes a format eg: (a really simple ugly one)
-            "<%(?:50:=) %(c:label) %(?:50:=)>"
-This might look like bs to you, but it makes sense, atleast for me :>
-The output of the prompt above is a scalable comment divider with a editable
-label, output:
+Not going in to deep, lets take a format eg: (a really simple ugly one)
+                    "<%(?:50:=) %(c:label) %(?:50:=)>"
+The output of the prompt above is a scalable comment divider with a 
+editable label, output:
  <====== label ======> 
  <============= loooonger label =============> 
  <====================== loooooooooow taper fade =======================>
@@ -33,8 +27,11 @@ Even something like this!
  <=:-~                   Hello this is a label!!!                   ~-:=>
  <===:-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-:===> 
 
- learn more about the syntax at |format-syntax|
+ learn more about the syntax at: 
+ |scd-nvim.format-syntax| / |scd-nvim.setup-custom-formats|
 
+=========================================================================
+(>- ---------<=>-------- scd.nvim getting started --------<=>-------- -<) 
 =========================================================================
                                                  *scd-nvim.getting-started*
 
@@ -48,18 +45,39 @@ The setup parameter has a few `keys` so lets go over them:
     format = "" -- the default foramt passed when no format is passed
     comment_on_both_sided = true -- should commentstring be on both sides
     default_length = 50 -- default length of comment if none passed
-    label_prompt = "Enter label > " -- the prompt for entering label
 }
+
                                                         *:ScdCreateDivider*
-Now lets explore the one golden command ...
-:ScdCreateDivider <len>:int ; <label>:string ; <format>:string ; <debug-format>:bool
-The arguments are separated by `;`
+
+:ScdCreateDivider <format> <length> <label ...>
+
+ - `format` -> can be picked from `scd-nvim.formats`.formats
+        @dev_format_foramt -> format for format "development"
+        |scd-nvim.setup-custom-formats|
+ - length -> yea ... length. I think you can figure that one out
+           -> NOTE: its not fixed to suggested values, it can be anything
+ - label -> every word after length is a part of the note
 
 =========================================================================
+(>- ------<=>------ scd.nvim custom formats / syntax ------<=>------- -<) 
+=========================================================================
+                                            *scd-nvim.setup-custom-formats*
+
+To use a custom format you have to set the `dev_format_buffer` to your
+custom format. This might seem scary but its to easy.
+
+`:lua require('scd-nvim.dev').format_buffer = ' <your format> '`
+
+then run `:ScdCreateDivider` as usual but with `@dev_format_buffer` as
+your format.
+
+`:ScdCreateDivider @dev_format_buffer <length> <label ...>`
+
                                                    *scd-nvim.format-syntax*
 
-The format string is what defines the style of the comment, so the comment
-can scale, adjust to labels (or not) and look different.  
+The format string is what defines the style of the comment, so the 
+comment can scale, adjust to labels (or not) and look different in
+many diffrent ways and forms.  
 
 To do this you need to use a "prefix", initialized by `%`, followed by
 a parameter that hold the data of what to do, `%()` in the param
@@ -67,15 +85,19 @@ things are separated by `:` . First up in the param comes the
 `operator` there are 6 operators in total, 5 for letter repetision and
 one to get values. 
 
-    - %(=:`x`:`chars`) -> repeates the `chars` `x` many times
-    - %(/=:`x`:`chars`) -> repeates the chars x many procent out of length
-    - %(!:`x`:`chars`) -> repeates the chars x many procent out of length minus label length
-    - %(/!:`x`:`chars`) -> repeates the chars x mant procent out of length minus constant chars
-    - %(?:`x`:`chars`) -> repeates the chars x many procent out of leanth minus label length minus constant chars
-    - %(c:`name`:`chars`?) -> "constants", chars not always needed, only if value ends up as int
-        -  `len` -> length no questions asked             (   char   )
-        -  `label` -> label text, adds label to buffer    (  buffer  )
-        -  `/label` -> length of label                    (   char   )
+ - %(=:`x`:`chars`) -> repeates the `chars` `x` many times
+ - %(/=:`x`:`chars`) -> repeates the chars x many procent out of length
+ - %(!:`x`:`chars`) -> repeates the chars x many procent out of length 
+                          minus label length
+ - %(/!:`x`:`chars`) -> repeates the chars x mant procent out of length
+                           minus constant chars
+ - %(?:`x`:`chars`) -> repeates the chars x many procent out of leanth
+                          minus label length minus constant chars
+ - %(c:`name`:`chars`?) -> "constants", chars not always needed, only if
+                              value ends up as int
+    -  `len` -> length no questions asked             (   char   )
+    -  `label` -> label text, adds label to buffer    (  buffer  )
+    -  `/label` -> length of label                    (   char   )
 
 `X` can be for either repeating my procentage or right of. The thing being
 repeated is the char. So:
@@ -87,7 +109,8 @@ The syntax is built on a princable that theres `constant_chars` and
 `non_constand_chars`, constant_chars `constant_chars` are the "free"
 characters in the string eg:
 "aaa%(=:3:b)" -> 3 constant_chars even tough the output is "aaabbb" (6)
-this is becouse 3 of those chars were non_constant AKA got "generated" during parsing.
+this is becouse 3 of those chars were non_constant 
+AKA got "generated" during parsing.
 
 lines are separated with `,` each line has its own constants, and non.
 This is well if you want to create multiline comments
@@ -100,7 +123,7 @@ Start with a simple one:
         of overflow
         read on note
         down bellow        repeat on the second part aswell
-           ↓            	↓
+           ↓                ↓
 " ̣̣<%(?:50.05:~) %(c:label) %(?:50:~)> "
      ↑              ↑
      |        Add the label
