@@ -161,3 +161,5 @@ NOTE: You cant repeat a char by a float
 so there are inperfections, to reduce this (not remove) use some "overflow"
 if your doing, like a three line comment. So instead of putting 50% on
 the label line putting 50.05% or 50.01%
+
+    vim:tw=78:ts=8:noet:ft=help:norl:
