@@ -3,26 +3,12 @@ local Config = {}
 
 -- import utils
 local split = require('scd-nvim.lib.utils').split
-local find_closing_paren = require('scd-nvim.lib.utils').find_closing_paren
+local find_closing_char = require('scd-nvim.lib.utils').find_closing_char
 local report = require('scd-nvim.lib.error').report
 local err_msg = require('scd-nvim.lib.error').err_msgs
 
 local string_len = vim.fn.strchars
 local operator_functions = require('scd-nvim.operators')
-
-
-function dump(o)
-	if type(o) == 'table' then
-		local s = '{ '
-		for k, v in pairs(o) do
-			if type(k) ~= 'number' then k = '"' .. k .. '"' end
-			s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
-		end
-		return s .. '} '
-	else
-		return tostring(o)
-	end
-end
 
 ---@class Proccess_Opt
 ---@field label string
@@ -82,10 +68,21 @@ function Proccess_pattern(format, opt)
 				goto continue
 			end
 
+			---@type Error_info
+			local error_info = {
+				index = char_idx,
+				line_nr = format_idx,
+				line = format_line
+			}
+
 			-- TODO: check if next char is start paren & throw error if not
 
 			local start_paren_idx = char_idx + 1
-			local end_paren_idx = find_closing_paren(start_paren_idx, format_line)
+			local end_paren_idx = find_closing_char(start_paren_idx, ')', format_line)
+
+			if not end_paren_idx then
+				report(error_info, err_msg['NO_CLOSING_PAREN'])
+			end
 
 			-- To skip the param characters so they dont get added to buffer as constant_characters
 			next_start_idx = end_paren_idx

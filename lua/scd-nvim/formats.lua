@@ -26,9 +26,11 @@
 	---```
 ---@field def_triple string
 
----@return Formats
+---@type {formats: Formats, keys: string[]}
+local M = {}
+
 ---@type Formats
-return {
+M.formats = {
 	-- single lines
 	def_single = ' <=:-%(?:50.05:~) ) %(c:label) ( %(?:50:~)-:=> ',
 	free_single = ' (>- %(?:25:-)<=>%(?:25.05:-) %(c:label) %(?:25.05:-)<=>%(?:25:-) -<) ',
@@ -36,3 +38,11 @@ return {
 	-- triple
 	def_triple = ' <===:-%(/!:100:~)-:===> , <:-%(?:51.05: )( %(c:label) )%(?:50: )-:> , <===:-%(/!:100:~)-:===> '
 }
+
+M.keys = {}
+for key, _ in pairs(M.formats) do
+	table.insert(M.keys, key)
+end
+
+---@return {formats: Formats, keys: string[]} 
+return M

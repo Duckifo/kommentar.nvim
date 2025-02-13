@@ -39,7 +39,7 @@ end
 
 
 err.err_msgs = {
-	['NO_CLOSING_BRACKET'] = 'No closing bracket found for parameter.',
+	['NO_CLOSING_PAREN'] = 'No closing paren found for parameter.',
 	['NOT_ENOUGH_ARG'] = 'Not enough arguments passed in parameter.',
 	['NON_VALID_OPERATOR'] = 'Non valid operator passed in parameter.',
 	['NO_OPERATOR'] = 'No operator provided in parameter.',

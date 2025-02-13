@@ -1,6 +1,8 @@
 --[[		Hayo there :P - Duckifo - 8/2/2025
 		Lookat the `:help` page if your lost
 ]]
+---@meta
+---@version LuaJIT-2.1
 
 ---@class Format_config
 ---@field prefix_character string The prefix character defaulted to `%`
