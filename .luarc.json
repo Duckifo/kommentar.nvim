@@ -1,0 +1,14 @@
+{
+  "workspace": {
+    "library": {
+      "/usr/share/nvim/runtime": true,
+      "${3rd}/luv/library": true,
+      "${3rd}/luajit/library": true
+    },
+    "checkThirdParty": false
+  },
+  "diagnostics": {
+    "globals": ["vim"]
+  }
+}
+
