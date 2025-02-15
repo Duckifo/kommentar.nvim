@@ -1,4 +1,4 @@
--- Heyo there, this is just a file full with formats, looking for explaination do `:help scd.nvim-format`
+-- Heyo there, this is just a file full with formats, looking for explaination do `:help kommentar.nvim-format`
 
 	--- A collections of hand crafter formats
 	--- Very nice B)

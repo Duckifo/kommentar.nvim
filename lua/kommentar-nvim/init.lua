@@ -23,9 +23,9 @@ local default_config = {
 	label_prompt = "Enter label > "
 }
 
-local scd_nvim = {}
+local kommentar_nvim = {}
 ---@param _Config Config -- Configuration
-scd_nvim.setup = function(_Config)
+kommentar_nvim.setup = function(_Config)
 	---@type Config
 	local final_config = default_config
 	for key, value in pairs(default_config) do
@@ -40,8 +40,8 @@ scd_nvim.setup = function(_Config)
 	end
 
 	-- init `core` and `commands`
-	require('scd-nvim.core').setup(final_config)
-	require('scd-nvim.commands')
+	require('kommentar-nvim.core').setup(final_config)
+	require('kommentar-nvim.commands')
 end
 
-return scd_nvim
+return kommentar_nvim

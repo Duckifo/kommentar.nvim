@@ -1,6 +1,6 @@
 -- get version command
 vim.api.nvim_create_user_command('ScdVersion', function()
-	print('Current Version Of `Scd.nvim` -- (requires `git`)\n:' .. require('scd-nvim.lib.version').get_local_version())
+	print('Current Version Of `Scd.nvim` -- (requires `git`)\n:' .. require('kommentar-nvim.lib.version').get_local_version())
 end, {})
 
 
@@ -35,13 +35,13 @@ vim.api.nvim_create_user_command("ScdCreateDivider", function(opts)
 	local format
 	-- Check if format_id name is `@dev_format_buffer`
 	if format_id == '@dev_format_buffer' then
-		format = require('scd-nvim.dev').format_buffer
+		format = require('kommentar-nvim.dev').format_buffer
 		if format == nil then
 			vim.api.nvim_err_writeln('No format written to `@dev_format_buffer`')
 			return
 		end
 	else
-		format = require('scd-nvim.formats').formats[format_id]
+		format = require('kommentar-nvim.formats').formats[format_id]
 	end
 
 	if not format then
@@ -50,14 +50,14 @@ vim.api.nvim_create_user_command("ScdCreateDivider", function(opts)
 	end
 
 	-- Create divider
-	require('scd-nvim.core').create_divider(label, length, format)
+	require('kommentar-nvim.core').create_divider(label, length, format)
 end, {
 	nargs = '*',
 	complete = function(arglead, cmdline, cursorpos)
 		local idx = #vim.fn.split(cmdline, ' ')
 		if idx == 1 then
 			local options = {}
-			for _, key in ipairs(require('scd-nvim.formats').keys) do
+			for _, key in ipairs(require('kommentar-nvim.formats').keys) do
 				table.insert(options, key)
 			end
 			table.insert(options, '@dev_format_buffer')

@@ -2,13 +2,13 @@
 local Config = {}
 
 -- import utils
-local split = require('scd-nvim.lib.utils').split
-local find_closing_char = require('scd-nvim.lib.utils').find_closing_char
-local report = require('scd-nvim.lib.error').report
-local err_msg = require('scd-nvim.lib.error').err_msgs
+local split = require('kommentar-nvim.lib.utils').split
+local find_closing_char = require('kommentar-nvim.lib.utils').find_closing_char
+local report = require('kommentar-nvim.lib.error').report
+local err_msg = require('kommentar-nvim.lib.error').err_msgs
 
 local string_len = vim.fn.strchars
-local operator_functions = require('scd-nvim.operators')
+local operator_functions = require('kommentar-nvim.operators')
 
 ---@class Proccess_Opt
 ---@field label string

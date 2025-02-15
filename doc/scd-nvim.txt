@@ -1,13 +1,13 @@
-*scd-nvim.txt*                                     last updated: 2025-02-13
+*kommentar.nvim.txt*                                     last updated: 2025-02-13
 =========================================================================
 Simple Comment Divider (.nvim) - A Simple Comment Divider
 =========================================================================
 
-(>- ----------<=>---------- scd.nvim @duckifo ----------<=>---------- -<)
+(>- ----------<=>---------- kommentar.nvim @duckifo ----------<=>---------- -<)
 
 =========================================================================
-                                                         *scd-nvim.general*
-Simple comment divider (.nvim) or scd.nvim is a simple commenting tool 
+                                                         *kommentar.nvim.general*
+Simple comment divider (.nvim) or kommentar.nvim is a simple commenting tool 
 that formats comments to mainly split up code. It is built to be 
 customizable to a point where im to lazy to keep going. Its main thing 
 going for it is the `format` that all comments are built uppon, it lets 
@@ -28,17 +28,17 @@ Even something like this!
  <===:-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-:===> 
 
  learn more about the syntax at: 
- |scd-nvim.format-syntax| / |scd-nvim.setup-custom-formats|
+ |kommentar.nvim.format-syntax| / |kommentar.nvim.setup-custom-formats|
 
 =========================================================================
-(>- ---------<=>-------- scd.nvim getting started --------<=>-------- -<) 
+(>- ---------<=>-------- kommentar.nvim getting started --------<=>-------- -<) 
 =========================================================================
-                                                 *scd-nvim.getting-started*
+                                                 *kommentar.nvim.getting-started*
 
 Getting started is as easy as any other plugin i hope :>. To setup and 
-configure `scd.nvim` just call:
+configure `kommentar.nvim` just call:
 
-    `require('scd-nvim').setup({})`
+    `require('kommentar-nvim').setup({})`
 
 The setup parameter has a few `keys` so lets go over them:
 {
@@ -51,29 +51,29 @@ The setup parameter has a few `keys` so lets go over them:
 
 :ScdCreateDivider <format> <length> <label ...>
 
- - `format` -> can be picked from `scd-nvim.formats`.formats
+ - `format` -> can be picked from `kommentar.nvim.formats`.formats
         @dev_format_foramt -> format for format "development"
-        |scd-nvim.setup-custom-formats|
+        |kommentar.nvim.setup-custom-formats|
  - length -> yea ... length. I think you can figure that one out
            -> NOTE: its not fixed to suggested values, it can be anything
  - label -> every word after length is a part of the note
 
 =========================================================================
-(>- ------<=>------ scd.nvim custom formats / syntax ------<=>------- -<) 
+(>- ------<=>------ kommentar.nvim custom formats / syntax ------<=>------- -<) 
 =========================================================================
-                                            *scd-nvim.setup-custom-formats*
+                                            *kommentar.nvim.setup-custom-formats*
 
 To use a custom format you have to set the `dev_format_buffer` to your
 custom format. This might seem scary but its to easy.
 
-`:lua require('scd-nvim.dev').format_buffer = ' <your format> '`
+`:lua require('kommentar-nvim.dev').format_buffer = ' <your format> '`
 
 then run `:ScdCreateDivider` as usual but with `@dev_format_buffer` as
 your format.
 
 `:ScdCreateDivider @dev_format_buffer <length> <label ...>`
 
-                                                   *scd-nvim.format-syntax*
+                                                   *kommentar.nvim.format-syntax*
 
 The format string is what defines the style of the comment, so the 
 comment can scale, adjust to labels (or not) and look different in
@@ -116,7 +116,7 @@ lines are separated with `,` each line has its own constants, and non.
 This is well if you want to create multiline comments
 
 =========================================================================
-                                              *scd-nvim.formating-examples*
+                                              *kommentar.nvim.formating-examples*
 Start with a simple one: 
 
         Use a bit            

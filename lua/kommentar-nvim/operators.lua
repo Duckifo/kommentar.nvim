@@ -1,7 +1,7 @@
 local string_len = vim.fn.strchars
 
-local match_msg = require('scd-nvim.lib.error').match_msg
-local err_msgs = require('scd-nvim.lib.error').err_msgs
+local match_msg = require('kommentar-nvim.lib.error').match_msg
+local err_msgs = require('kommentar-nvim.lib.error').err_msgs
 
 ---@class Operators_opt
 ---@field pro_opt Proccess_Opt that got passed to proccess 
