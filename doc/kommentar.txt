@@ -1,18 +1,17 @@
-*kommentar.nvim.txt*                                     last updated: 2025-02-13
+*kommentar.nvim.txt*                               last updated: 2025-02-15
 =========================================================================
-Simple Comment Divider (.nvim) - A Simple Comment Divider
+kommentar (.nvim) - A Simple Comment Divider
 =========================================================================
 
-(>- ----------<=>---------- kommentar.nvim @duckifo ----------<=>---------- -<)
+ (>- --------<=>-------- kommentar.nvim @duckifo --------<=>-------- -<) 
 
 =========================================================================
-                                                         *kommentar.nvim.general*
-Simple comment divider (.nvim) or kommentar.nvim is a simple commenting tool 
+                                                   *kommentar-nvim.general*
+kommentar.nvim is a simple commenting tool 
 that formats comments to mainly split up code. It is built to be 
-customizable to a point where im to lazy to keep going. Its main thing 
-going for it is the `format` that all comments are built uppon, it lets 
-comments be scalable, customizable, editable and look 
-really nice (im my opinion).
+customizable. Its main thing going for it is the `format` that all 
+comments are built uppon, it lets comments be scalable, customizable, 
+editable and look really nice (im my opinion).
 
 Not going in to deep, lets take a format eg: (a really simple ugly one)
                     "<%(?:50:=) %(c:label) %(?:50:=)>"
@@ -28,12 +27,12 @@ Even something like this!
  <===:-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-:===> 
 
  learn more about the syntax at: 
- |kommentar.nvim.format-syntax| / |kommentar.nvim.setup-custom-formats|
+ |kommentar-nvim.format-syntax| / |kommentar-nvim.setup-custom-formats|
 
 =========================================================================
-(>- ---------<=>-------- kommentar.nvim getting started --------<=>-------- -<) 
+ (>- ------<=>------ kommentar.nvim - getting started ------<=>----- -<) 
 =========================================================================
-                                                 *kommentar.nvim.getting-started*
+                                           *kommentar-nvim.getting-started*
 
 Getting started is as easy as any other plugin i hope :>. To setup and 
 configure `kommentar.nvim` just call:
@@ -47,33 +46,33 @@ The setup parameter has a few `keys` so lets go over them:
     default_length = 50 -- default length of comment if none passed
 }
 
-                                                        *:ScdCreateDivider*
+                                                           *:CreateDivider*
 
-:ScdCreateDivider <format> <length> <label ...>
+:CreateDivider <format> <length> <label ...>
 
- - `format` -> can be picked from `kommentar.nvim.formats`.formats
+ - `format` -> can be picked from `kommentar-nvim.formats`.formats
         @dev_format_foramt -> format for format "development"
-        |kommentar.nvim.setup-custom-formats|
+        |kommentar-nvim.setup-custom-formats|
  - length -> yea ... length. I think you can figure that one out
            -> NOTE: its not fixed to suggested values, it can be anything
  - label -> every word after length is a part of the note
 
 =========================================================================
-(>- ------<=>------ kommentar.nvim custom formats / syntax ------<=>------- -<) 
+ (>- ----<=>---- kommentar.nvim - custom formats / syntax ----<=>--- -<) 
 =========================================================================
-                                            *kommentar.nvim.setup-custom-formats*
+                                      *kommentar-nvim.setup-custom-formats*
 
 To use a custom format you have to set the `dev_format_buffer` to your
 custom format. This might seem scary but its to easy.
 
 `:lua require('kommentar-nvim.dev').format_buffer = ' <your format> '`
 
-then run `:ScdCreateDivider` as usual but with `@dev_format_buffer` as
+then run `:CreateDivider` as usual but with `@dev_format_buffer` as
 your format.
 
-`:ScdCreateDivider @dev_format_buffer <length> <label ...>`
+`:CreateDivider @dev_format_buffer <length> <label ...>`
 
-                                                   *kommentar.nvim.format-syntax*
+                                            *kommentar-nvim.format-syntax*
 
 The format string is what defines the style of the comment, so the 
 comment can scale, adjust to labels (or not) and look different in
@@ -116,7 +115,7 @@ lines are separated with `,` each line has its own constants, and non.
 This is well if you want to create multiline comments
 
 =========================================================================
-                                              *kommentar.nvim.formating-examples*
+                                        *kommentar-nvim.formating-examples*
 Start with a simple one: 
 
         Use a bit            
@@ -124,7 +123,7 @@ Start with a simple one:
         read on note
         down bellow        repeat on the second part aswell
            ↓                ↓
-" ̣̣<%(?:50.05:~) %(c:label) %(?:50:~)> "
+" ̣̣<%(`?:50.05:~`) %(`c:label`) %(`?:50:~`)> "
      ↑              ↑
      |        Add the label
      |
@@ -145,7 +144,7 @@ Lets move on to a more complex one, a multiline one (3 lines):
     remove consts and    
     not label                add label to buffer
      ↓                                ↓
- <=%(/!:100:~)=> , <=%(?:50.05: )%(c:label)%(?:50: )=> , <=%(/!:100:~)=> 
+ <=%(`/!:100:~`)=> , <=%(`?:50.05: `)%(`c:label`)%(`?:50: `)=> , <=%(`/!:100:~`)=> 
                        ↑                                     ↑
         as before use `?` for the             repeat the the upper side
         labels format, to remove            for the bottom side.
