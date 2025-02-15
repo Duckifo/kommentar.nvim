@@ -1,11 +1,11 @@
 -- get version command
-vim.api.nvim_create_user_command('ScdVersion', function()
-	print('Current Version Of `Scd.nvim` -- (requires `git`)\n:' .. require('kommentar-nvim.lib.version').get_local_version())
+vim.api.nvim_create_user_command('KommentarVersion', function()
+	print('Current Version Of `kommentar.nvim` -- (requires `git`)\n:' .. require('kommentar-nvim.lib.version').get_local_version() )
 end, {})
 
 
 -- Create new user command, for creating new divider at current cursor.pos and buffer
-vim.api.nvim_create_user_command("ScdCreateDivider", function(opts)
+vim.api.nvim_create_user_command("CreateDivider", function(opts)
 	--- get from index to index and put into a string
 	local function sub_table_to_string(t, start_idx, end_idx)
 		local sub = ''

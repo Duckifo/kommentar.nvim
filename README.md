@@ -7,7 +7,7 @@ being long enough when label length is even. This should only be noticeable in
 
 ## about
 
-kommentar.nvim ( simpe comment divider .nvim ) is a plugin for neovim that can split up
+kommentar.nvim is a plugin for neovim that can split up
 code by creating long ascii art comments with labels. These comments are generated 
 from `formats` which defines the style of the comment.
 
@@ -24,24 +24,19 @@ from `formats` which defines the style of the comment.
 
 ## usage
 
-To create a divider / comment use the `:ScdCreateDivider` user command. Example:\
-`:ScdCreateDivider <format> <length> <label ...>`
+To create a divider / comment use the `:CreateDivider` user command. Example:\
+`:CreateDivider <format> <length> <label ...>`
  - format - choose from predefined formats or from `@dev_buffer_format` to use your
- own formats look at `:h kommentar.nvim.setup-custom-formats` for more information about `@dev_buffer_format`
+ own formats. Look at `:h kommentar-nvim.setup-custom-formats` for more information about `@dev_buffer_format`
  - length - the length of the comment
  - label - no `'` or `"` needed everything after `length` is a part of label
 
- more information: `:h :ScdCreateDivider`
+ more information: `:h :CreateDivider`
 
 ## install
 
 ##### using lazy
 
 ```lua
-{
-    'duckifo/kommentar.nvim',
-    config = function()
-        require('kommentar-nvim').setup({})
-    end
-}
+{ 'duckifo/kommentar.nvim', opts = {} }
 ```
