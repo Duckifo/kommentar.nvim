@@ -31,7 +31,7 @@ function Proccess_pattern(format, opt)
 
 	-- For parsing later
 	-- Amount of characters that are not added with this proccess
-	local constant_characters = 0
+	local constant_characters = {}
 
 	-- `tokens` the output of Tokenizing format:
 	--[[ example
@@ -44,6 +44,8 @@ function Proccess_pattern(format, opt)
 	local tokens = {}
 
 	for format_idx, format_line in pairs(format_lines) do
+		constant_characters[format_idx] = 0
+
 		-- the local buffer for every `format line`
 		local line_tokens = {}
 		line_tokens[1] = ''
@@ -63,7 +65,7 @@ function Proccess_pattern(format, opt)
 
 			if char ~= '%' then
 				-- count amount of constant_characters
-				constant_characters = constant_characters + 1
+				constant_characters[format_idx] = constant_characters[format_idx] + 1
 				-- add char to buffer
 				line_tokens[idx] = line_tokens[idx] .. char
 				goto continue
@@ -110,11 +112,8 @@ function Proccess_pattern(format, opt)
 
 	-- Parsing format && Evaluating
 	-- Turn the tokenized_buffer into the finnished string now!
-	local buffer = ''
+	local buffer = comment_string
 	for i, tokenized_line in pairs(tokens) do
-		-- add commentstring to buffer
-		buffer = comment_string .. buffer
-
 		--[[ token format example:
 			{'====','%(param)','abcd'}
 		]]
@@ -147,7 +146,7 @@ function Proccess_pattern(format, opt)
 
 			---@type Operators_opt
 			local operator_opt = {
-				const_chars = constant_characters,
+				const_chars = constant_characters[i],
 				pro_opt = opt
 			}
 
@@ -168,8 +167,8 @@ function Proccess_pattern(format, opt)
 		if Config.comment_on_both_sides then
 			buffer = buffer .. comment_string
 		end
-		-- Add new line
-		buffer = buffer .. '\n'
+		-- Add new line and comment_string
+		buffer = buffer .. '\n' .. (i == #tokens and '' or comment_string)
 	end
 
 	return buffer
