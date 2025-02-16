@@ -24,16 +24,4 @@ function utils.find_closing_char(start_idx, end_char, string)
 	return nil
 end
 
---- Splits string at `separator` char into a table
----@param str string
----@param sep string char
----@return string[]
-function utils.split(str, sep)
-	local result = {}
-	for match in str:gmatch("([^" .. sep .. "]+)") do
-		table.insert(result, match)
-	end
-	return result
-end
-
 return utils

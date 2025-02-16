@@ -3,7 +3,6 @@ vim.api.nvim_create_user_command('KommentarVersion', function()
 	print('Current Version Of `kommentar.nvim` -- (requires `git`)\n:' .. require('kommentar-nvim.lib.version').get_local_version() )
 end, {})
 
-
 -- Create new user command, for creating new divider at current cursor.pos and buffer
 vim.api.nvim_create_user_command("CreateDivider", function(opts)
 	--- get from index to index and put into a string
@@ -30,7 +29,7 @@ vim.api.nvim_create_user_command("CreateDivider", function(opts)
 
 	local length = tonumber(args[2])
 	local format_id = args[1]
-	local label = sub_table_to_string(args, 3)
+	local label = sub_table_to_string(args, 3):sub(2) -- sub(2) as first char is always a space
 
 	local format
 	-- Check if format_id name is `@dev_format_buffer`
@@ -42,6 +41,10 @@ vim.api.nvim_create_user_command("CreateDivider", function(opts)
 		end
 	else
 		format = require('kommentar-nvim.formats').formats[format_id]
+		if format == nil then
+			vim.api.nvim_err_writeln('Unvalid format id')
+			return
+		end
 	end
 
 	if not format then

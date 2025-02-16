@@ -32,7 +32,7 @@ local M = {}
 ---@type Formats
 M.formats = {
 	-- single lines
-	def_single = ' <=:-%(?:50.05:~) ) %(c:label) ( %(?:50:~)-:=> ',
+	def_single = ' <=:-%(?:50:~) %(c:label) %(?:50:~)-:=> ',
 	free_single = ' (>- %(?:25:-)<=>%(?:25.05:-) %(c:label) %(?:25.05:-)<=>%(?:25:-) -<) ',
 
 	-- triple

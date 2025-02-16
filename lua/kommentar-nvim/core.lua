@@ -2,7 +2,7 @@
 local Config = {}
 
 -- import utils
-local split = require('kommentar-nvim.lib.utils').split
+local split = vim.fn.split
 local find_closing_char = require('kommentar-nvim.lib.utils').find_closing_char
 local report = require('kommentar-nvim.lib.error').report
 local err_msg = require('kommentar-nvim.lib.error').err_msgs
@@ -33,7 +33,7 @@ function Proccess_pattern(format, opt)
 	-- Amount of characters that are not added with this proccess
 	local constant_characters = 0
 
-	-- `tokenized_buffer` the output of Tokenizing format:
+	-- `tokens` the output of Tokenizing format:
 	--[[ example
 		{
 			{'<==','%(param),'==>'},
@@ -41,16 +41,17 @@ function Proccess_pattern(format, opt)
 		}	
 	]]
 	---@type string[][]
-	local tokenized_buffer = {}
+	local tokens = {}
 
 	for format_idx, format_line in pairs(format_lines) do
 		-- the local buffer for every `format line`
-		local tokenized_line_buffer = {}
-		tokenized_line_buffer[1] = ''
+		local line_tokens = {}
+		line_tokens[1] = ''
 
 		-- if next_start_idx >= char_idx skip
 		-- Used to skip param chars
 		local next_start_idx = -math.huge
+		local idx = 1
 
 		for char_idx = 1, string_len(format_line) do
 			-- skip param characters
@@ -64,9 +65,11 @@ function Proccess_pattern(format, opt)
 				-- count amount of constant_characters
 				constant_characters = constant_characters + 1
 				-- add char to buffer
-				tokenized_line_buffer[#tokenized_line_buffer] = tokenized_line_buffer[#tokenized_line_buffer] .. char
+				line_tokens[idx] = line_tokens[idx] .. char
 				goto continue
 			end
+
+			idx = idx + 1
 
 			---@type Error_info
 			local error_info = {
@@ -89,14 +92,17 @@ function Proccess_pattern(format, opt)
 
 			-- add param to buffer
 			local param = format_line:sub(char_idx, end_paren_idx)
-			tokenized_line_buffer[#tokenized_line_buffer + 1] = param
+			line_tokens[idx] = param
 
-			-- create buffer for next
-			tokenized_line_buffer[#tokenized_line_buffer + 2] = ''
+			-- create new buffer for next if its constant char
+			if format_line:sub(end_paren_idx + 1, end_paren_idx + 1) ~= '%' then
+				idx = idx + 1
+				line_tokens[idx] = ''
+			end
 
 			::continue::
 		end
-		tokenized_buffer[format_idx] = tokenized_line_buffer
+		tokens[format_idx] = line_tokens
 	end
 
 	-- Get the commentstring or
@@ -105,7 +111,7 @@ function Proccess_pattern(format, opt)
 	-- Parsing format && Evaluating
 	-- Turn the tokenized_buffer into the finnished string now!
 	local buffer = ''
-	for i, tokenized_line in pairs(tokenized_buffer) do
+	for i, tokenized_line in pairs(tokens) do
 		-- add commentstring to buffer
 		buffer = comment_string .. buffer
 
