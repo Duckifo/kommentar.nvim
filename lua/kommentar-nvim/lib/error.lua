@@ -1,4 +1,4 @@
---- for reporting errors
+--- For debuging format errors 
 local err = {}
 
 ---@class Error_info
@@ -13,7 +13,7 @@ err.report = function(t, msg)
 		' Error occured, during parsing of prefix on line:' .. t.line_nr .. ('\n'):rep(2) ..
 		' ' .. t.line .. ('\n'):rep(1) ..
 		' ' .. (' '):rep(t.index) .. '↑' .. '\n' ..
-		' ' .. msg
+		' ' .. msg .. '\n'
 
 	vim.api.nvim_err_writeln(output)
 end
