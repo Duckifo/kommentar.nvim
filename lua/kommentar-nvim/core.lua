@@ -1,3 +1,6 @@
+-- module / M
+local core = {}
+
 ---@type Config
 local Config = {}
 
@@ -18,7 +21,7 @@ local operator_functions = require('kommentar-nvim.operators')
 --- Proccess format by the options passed
 --- @param format string Format to use
 --- @param opt Proccess_Opt
-function Proccess_pattern(format, opt)
+core.Proccess_pattern = function(format, opt)
 	-- Start by `Tokenizing` format
 	-- (Spliting it up before being parsed)
 
@@ -174,7 +177,6 @@ function Proccess_pattern(format, opt)
 	return buffer
 end
 
-local core = {}
 
 -- The init function to set the cofig
 ---@param _Config Config Set the config
@@ -185,7 +187,7 @@ end
 ---@param label string
 ---@param length integer
 ---@param format string
-core.create_divider = function(label, length, format)
+core.create_divider_write_buf = function(label, length, format)
 	-- make sure arguments are set well and done
 	label = label or ''
 	length = length or Config.default_length
@@ -207,7 +209,7 @@ core.create_divider = function(label, length, format)
 	}
 
 	-- Proccess and get the `comment_buffer`
-	local comment_buffer = Proccess_pattern(format, opt)
+	local comment_buffer = core.Proccess_pattern(format, opt)
 
 	-- return if failed
 	if comment_buffer == nil then return end
