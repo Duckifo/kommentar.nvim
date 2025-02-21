@@ -1,7 +1,7 @@
-:ScdCreateDivider	kommentar.nvim.txt	/*:ScdCreateDivider*
-kommentar.nvim	kommentar.nvim.txt	/*kommentar.nvim*
-kommentar.nvim.format-syntax	kommentar.nvim.txt	/*kommentar.nvim.format-syntax*
-kommentar.nvim.formating-examples	kommentar.nvim.txt	/*kommentar.nvim.formating-examples*
-kommentar.nvim.general	kommentar.nvim.txt	/*kommentar.nvim.general*
-kommentar.nvim.getting-started	kommentar.nvim.txt	/*kommentar.nvim.getting-started*
-kommentar.nvim.setup-custom-formats	kommentar.nvim.txt	/*kommentar.nvim.setup-custom-formats*
+:CreateDivider	kommentar.txt	/*:CreateDivider*
+kommentar-nvim.format-syntax	kommentar.txt	/*kommentar-nvim.format-syntax*
+kommentar-nvim.formating-examples	kommentar.txt	/*kommentar-nvim.formating-examples*
+kommentar-nvim.general	kommentar.txt	/*kommentar-nvim.general*
+kommentar-nvim.getting-started	kommentar.txt	/*kommentar-nvim.getting-started*
+kommentar-nvim.setup-custom-formats	kommentar.txt	/*kommentar-nvim.setup-custom-formats*
+kommentar.nvim.txt	kommentar.txt	/*kommentar.nvim.txt*

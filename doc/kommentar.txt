@@ -17,15 +17,17 @@ Not going in to deep, lets take a format eg: (a really simple ugly one)
                     "<%(?:50:=) %(c:label) %(?:50:=)>"
 The output of the prompt above is a scalable comment divider with a 
 editable label, output:
- <====== label ======> 
- <============= loooonger label =============> 
- <====================== loooooooooow taper fade =======================>
-
+>lua
+ -- <====== label ======> -- 
+ -- <============= loooonger label =============> -- 
+ -- <====================== loooooooooow taper fade =======================> --
+<
 Even something like this!
- <===:-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-:===> 
- <=:-~                   Hello this is a label!!!                   ~-:=>
- <===:-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-:===> 
-
+>lua
+ -- <===:-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-:===> --
+ -- <=:-~                   Hello this is a label!!!                   ~-:=> --
+ -- <===:-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-:===> -- 
+<
  learn more about the syntax at: 
  |kommentar-nvim.format-syntax| / |kommentar-nvim.setup-custom-formats|
 
@@ -40,22 +42,23 @@ configure `kommentar.nvim` just call:
     `require('kommentar-nvim').setup({})`
 
 The setup parameter has a few `keys` so lets go over them:
-{
-    format = "" -- the default foramt passed when no format is passed
-    comment_on_both_sided = true -- should commentstring be on both sides
-    default_length = 50 -- default length of comment if none passed
-}
+>lua
+    {
+	format = { format_id = "format here" }, -- table that adds formats 
+	comment_on_both_sided = true -- should commentstring be on both sides
+	default_length = 50 -- default length of comment if number found nil
+    }
+<
 
                                                            *:CreateDivider*
-
-:CreateDivider <format> <length> <label ...>
+    :CreateDivider <format> <length> <label ...>
 
  - `format` -> can be picked from `kommentar-nvim.formats`.formats
         @dev_format_foramt -> format for format "development"
         |kommentar-nvim.setup-custom-formats|
- - length -> yea ... length. I think you can figure that one out
+ - `length` -> yea ... length. I think you can figure that one out
            -> NOTE: its not fixed to suggested values, it can be anything
- - label -> every word after length is a part of the note
+ - `label` -> every word after length is a part of the note
 
 =========================================================================
  (>- ----<=>---- kommentar.nvim - custom formats / syntax ----<=>--- -<) 
@@ -133,9 +136,10 @@ for the label. optionally
 use ! but length wont be
 what you inputed.
 
-output will be: 
- <======================= hello this is a label =======================> 
-
+output will be:
+>lua
+ -- <======================= hello this is a label =======================> -- 
+<
 
 Lets move on to a more complex one, a multiline one (3 lines):
     
@@ -151,14 +155,28 @@ Lets move on to a more complex one, a multiline one (3 lines):
         consts and the label
                                     
 output will be:
- <=~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=> 
- <=                this is a multiline formated comment                => 
- <=~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=> 
-
+>lua
+ -- <=~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=> --
+ -- <=                this is a multiline formated comment                => --
+ -- <=~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=> --
+<
 
 NOTE: You cant repeat a char by a float
 so there are inperfections, to reduce this (not remove) use some "overflow"
 if your doing, like a three line comment. So instead of putting 50% on
 the label line putting 50.05% or 50.01%
 
-    vim:tw=78:ts=8:noet:ft=help:norl:
+===========================================================================
+ (>- -----------<=>----------- testing formats ----------<=>---------- -<) 
+===========================================================================
+					     *kommentar-nvim.testing-formats*
+
+WARNING: Make sure to add a `tests` directory to plugin root,
+`kommentar.nvim/tests`. All tests will be written to this directory
+
+`format-test`:
+The format test can be found at `lua/kommentar-nvim/tests/format-test.lua`
+Used to test how format reacts to label len.
+
+
+vim:tw=78:ts=8:noet:ft=help:norl:
