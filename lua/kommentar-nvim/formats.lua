@@ -42,6 +42,9 @@ M.formats = {
 M.keys = {}
 --- reload the keys from `M.formats`
 M.reload_keys = function()
+	-- reset keys
+	M.keys = {}
+	-- add new keys
 	for key, _ in pairs(M.formats) do
 		table.insert(M.keys, key)
 	end

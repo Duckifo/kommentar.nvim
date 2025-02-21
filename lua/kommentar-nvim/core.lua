@@ -184,7 +184,7 @@ core.create_divider_write_buf = function(label, length, format)
 	-- make sure arguments are set well and done
 	label = label or ''
 	length = length or Config.default_length
-	format = format or Config.format
+	format = format or Config.formats
 
 	-- Can be used in format by doing %(c:`name`)
 	-- Types can be string or int
