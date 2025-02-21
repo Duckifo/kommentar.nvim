@@ -1,8 +1,8 @@
 -- module / M
 local core = {}
 
----@type Config
-local Config = {}
+---@type User_Config
+local Config = require('kommentar-nvim.config').config
 
 -- import utils
 local split = vim.fn.split
@@ -175,13 +175,6 @@ core.Proccess_pattern = function(format, opt)
 	end
 
 	return buffer
-end
-
-
--- The init function to set the cofig
----@param _Config Config Set the config
-core.setup = function(_Config)
-	Config = _Config
 end
 
 ---@param label string
