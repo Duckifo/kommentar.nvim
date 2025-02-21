@@ -1,5 +1,5 @@
 local utils = {}
-local string_len = vim.fn.strchars
+local utf8 = require('utf8')
 
 --- Searches for closing char from the start_idx
 ---```
@@ -12,8 +12,8 @@ local string_len = vim.fn.strchars
 ---@param string string
 ---@return integer | nil
 function utils.find_closing_char(start_idx, end_char, string)
-	for i=start_idx, string_len(string) do
-		local char = string:sub(i, i)
+	for i=start_idx, utf8.len(string) - 1 do
+		local char = utf8.sub(string, i, i)
 		if char == end_char then
 			return i
 		end
@@ -23,5 +23,4 @@ function utils.find_closing_char(start_idx, end_char, string)
 	-- TODO: do proper error msg
 	return nil
 end
-
 return utils

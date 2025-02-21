@@ -1,7 +1,7 @@
 -- module / M
 local core = {}
 
----@type User_Config
+---@type Config
 local Config = require('kommentar-nvim.config').config
 
 -- import utils
@@ -10,7 +10,7 @@ local find_closing_char = require('kommentar-nvim.lib.utils').find_closing_char
 local report = require('kommentar-nvim.lib.error').report
 local err_msg = require('kommentar-nvim.lib.error').err_msgs
 
-local string_len = vim.fn.strchars
+local utf8 = require('utf8')
 local operator_functions = require('kommentar-nvim.operators')
 
 ---@class Proccess_Opt
@@ -58,13 +58,13 @@ core.Proccess_pattern = function(format, opt)
 		local next_start_idx = -math.huge
 		local idx = 1
 
-		for char_idx = 1, string_len(format_line) do
+		for char_idx = 1, utf8.len(format_line) do
 			-- skip param characters
 			if next_start_idx >= char_idx then
 				goto continue
 			end
 
-			local char = format_line:sub(char_idx, char_idx)
+			local char = utf8.sub(format_line, char_idx, char_idx)
 
 			if char ~= '%' then
 				-- count amount of constant_characters
@@ -96,11 +96,11 @@ core.Proccess_pattern = function(format, opt)
 			next_start_idx = end_paren_idx
 
 			-- add param to buffer
-			local param = format_line:sub(char_idx, end_paren_idx)
+			local param = utf8.sub(format_line, char_idx, end_paren_idx)
 			line_tokens[idx] = param
 
 			-- create new buffer for next if its constant char
-			if format_line:sub(end_paren_idx + 1, end_paren_idx + 1) ~= '%' then
+			if utf8.sub(format_line, end_paren_idx + 1, end_paren_idx + 1) ~= '%' then
 				idx = idx + 1
 				line_tokens[idx] = ''
 			end
@@ -109,6 +109,8 @@ core.Proccess_pattern = function(format, opt)
 		end
 		tokens[format_idx] = line_tokens
 	end
+
+	print(vim.inspect(tokens))
 
 	-- Get the commentstring or
 	local comment_string = vim.bo.commentstring:gsub(' %%s', '')
@@ -123,14 +125,14 @@ core.Proccess_pattern = function(format, opt)
 		for j, token in pairs(tokenized_line) do
 			-- skip if token cant be parsed
 
-			if token:sub(1, 1) ~= '%' then
+			if utf8.sub(token, 1, 1) ~= '%' then
 				buffer = buffer .. token
 				goto continue
 			end
 
 			---@type Error_info
 			local error_info = {
-				index = string_len(buffer) + 2,
+				index = utf8.len(buffer) + 2,
 				line_nr = i,
 				line = format_lines[i]
 			}
@@ -184,14 +186,14 @@ core.create_divider_write_buf = function(label, length, format)
 	-- make sure arguments are set well and done
 	label = label or ''
 	length = length or Config.default_length
-	format = format or Config.formats
+	format = format or 'Somthing went wrong :( ... your problem now >:)'
 
 	-- Can be used in format by doing %(c:`name`)
 	-- Types can be string or int
 	local constants = {
 		['len'] = length,
 		['label'] = label,
-		['/label'] = string_len(label)
+		['/label'] = utf8.len(label)
 	}
 
 	---@type Proccess_Opt

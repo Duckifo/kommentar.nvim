@@ -1,4 +1,4 @@
-local string_len = vim.fn.strchars
+local utf8 = require('utf8')
 
 local match_msg = require('kommentar-nvim.lib.error').match_msg
 local err_msgs = require('kommentar-nvim.lib.error').err_msgs
@@ -80,7 +80,7 @@ operators['!'] = function( args, opt )
 		return nil, err
 	end
 
-	local times = percent * (opt.pro_opt.length - string_len(opt.pro_opt.label))
+	local times = percent * (opt.pro_opt.length - utf8.len(opt.pro_opt.label))
 
 	return char:rep(math.floor(times + 0.5)), ''
 end
@@ -114,7 +114,7 @@ operators['?'] = function( args, opt )
 		return nil, err
 	end
 
-	local times = (percent * (opt.pro_opt.length - string_len(opt.pro_opt.label))) - (opt.const_chars * percent)
+	local times = (percent * (opt.pro_opt.length - utf8.len(opt.pro_opt.label))) - (opt.const_chars * percent)
 
 	return char:rep(math.floor(times + 0.5)), ''
 end
