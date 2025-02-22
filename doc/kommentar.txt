@@ -44,9 +44,9 @@ configure `kommentar.nvim` just call:
 The setup parameter has a few `keys` so lets go over them:
 >lua
     {
-	format = { format_id = "format here" }, -- table that adds formats 
-	comment_on_both_sided = true -- should commentstring be on both sides
-	default_length = 50 -- default length of comment if number found nil
+        format = { format_id = "format here" }, -- table that adds formats 
+        comment_on_both_sided = true -- should commentstring be on both sides
+        default_length = 50 -- default length of comment if number found nil
     }
 <
 
@@ -117,20 +117,30 @@ AKA got "generated" during parsing.
 lines are separated with `,` each line has its own constants, and non.
 This is well if you want to create multiline comments
 
+
+{modifiers} are functions that edit the comment after it been generated
+eg, the overflow modifier that ensures that the comment is as long
+as it should be by looking at the final output.
+
+Modifiers are used in the parameter at the end, and is separated by `|`
+So it might look something like this: `%(?:50:~|overflow)` to add overflow
+to a parameter.
+
+mods: 
+    - overflow -> edits buffer to make the selected parameter longer
+      or shorter. (adds / removes characters)
+
 =========================================================================
                                         *kommentar-nvim.formating-examples*
 Start with a simple one: 
 
-        Use a bit            
-        of overflow
-        read on note
-        down bellow        repeat on the second part aswell
-           ↓                ↓
-" ̣̣<%(`?:50.05:~`) %(`c:label`) %(`?:50:~`)> "
-     ↑              ↑
-     |        Add the label
-     |
-Use ? to remove other
+            repeat on the second part aswell
+                            ↓
+" ̣̣<%(`?:50:~`) %(`c:label`) %(`?:50:~``|overflow`)> "
+     ↑              ↑               ↑
+     |        Add the label     Add the `overflow` modifier
+     |                          to make the comment be the
+Use ? to remove other           right length.
 characters and leave room
 for the label. optionally 
 use ! but length wont be
@@ -145,13 +155,13 @@ Lets move on to a more complex one, a multiline one (3 lines):
     
     on the upper side
     use `/!` to so
-    remove consts and    
-    not label                add label to buffer
-     ↓                                ↓
- <=%(`/!:100:~`)=> , <=%(`?:50.05: `)%(`c:label`)%(`?:50: `)=> , <=%(`/!:100:~`)=> 
-                       ↑                                     ↑
-        as before use `?` for the             repeat the the upper side
-        labels format, to remove            for the bottom side.
+    remove consts and                                Add overflow to make 
+    not label                add label to buffer     comment right lenght
+     ↓                                ↓                 ↓
+ <=%(`/!:100:~`)=> , <=%(`?:50: `)%(`c:label`)%(`?:50: |overflow`)=> , <=%(`/!:100:~`)=> 
+                       ↑                                          ↑
+        as before use `?` for the               repeat the the upper side
+        labels format, to remove                        for the bottom side.
         consts and the label
                                     
 output will be:
@@ -160,16 +170,10 @@ output will be:
  -- <=                this is a multiline formated comment                => --
  -- <=~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=> --
 <
-
-NOTE: You cant repeat a char by a float
-so there are inperfections, to reduce this (not remove) use some "overflow"
-if your doing, like a three line comment. So instead of putting 50% on
-the label line putting 50.05% or 50.01%
-
 ===========================================================================
  (>- -----------<=>----------- testing formats ----------<=>---------- -<) 
 ===========================================================================
-					     *kommentar-nvim.testing-formats*
+                                             *kommentar-nvim.testing-formats*
 
 WARNING: Make sure to add a `tests` directory to plugin root,
 `kommentar.nvim/tests`. All tests will be written to this directory
