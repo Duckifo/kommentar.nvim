@@ -11,6 +11,8 @@ local report = require('kommentar-nvim.lib.error').report
 local err_msg = require('kommentar-nvim.lib.error').err_msgs
 
 local utf8 = require('utf8')
+
+local modifier_functions = require('kommentar-nvim.modifiers')
 local operator_functions = require('kommentar-nvim.operators')
 
 ---@class Proccess_Opt
@@ -27,7 +29,6 @@ core.Proccess_pattern = function(format, opt)
 
 	-- Format gets split up into a table separated by `%(param)`
 	-- tokenized_format: {'<==','%(param)','==>'}
-
 
 	-- Start by spliting format into lines separated by `,`
 	local format_lines = split(format, ',')
@@ -110,10 +111,13 @@ core.Proccess_pattern = function(format, opt)
 		tokens[format_idx] = line_tokens
 	end
 
-	print(vim.inspect(tokens))
-
 	-- Get the commentstring or
 	local comment_string = vim.bo.commentstring:gsub(' %%s', '')
+
+	-- [buf_idx] = mod
+	-- used to edit string after generated, eg `overflow`
+	-- edits string from module, `modifiers.lua`
+	local modifiers = {}
 
 	-- Parsing format && Evaluating
 	-- Turn the tokenized_buffer into the finnished string now!
@@ -140,8 +144,18 @@ core.Proccess_pattern = function(format, opt)
 			-- < Evaluate / Transform >
 
 			-- Get the values passed in param, and split by ':' into a table
-			local parameter = split(token:match('%((.-)%)'), ':')
-			local operator = parameter[1]
+			local parameter = split(token:match('%((.-)%)'), '|')
+			local operator_parameter = split(parameter[1], ':')
+			local operator = operator_parameter[1]
+
+			-- get modifiers, split by `|`
+			local modifier_parameter = parameter
+			modifier_parameter[1] = nil
+
+			-- add modifier to moduifier table, so it can be used later
+			for _, modifier in pairs(modifier_parameter) do
+				modifiers[utf8.len(buffer)] = modifier
+			end
 
 			-- Check if operator is existant
 			if operator_functions[operator] == nil then
@@ -156,7 +170,7 @@ core.Proccess_pattern = function(format, opt)
 			}
 
 			-- Call operators function
-			local result, err = operator_functions[operator]( parameter, operator_opt )
+			local result, err = operator_functions[operator]( operator_parameter, operator_opt )
 
 			if result == nil then
 				report(error_info, err or 'unknown error')
@@ -174,6 +188,21 @@ core.Proccess_pattern = function(format, opt)
 		end
 		-- Add new line and comment_string
 		buffer = buffer .. '\n' .. (i == #tokens and '' or comment_string)
+	end
+
+	-- apply modifiers
+	for idx, mod in pairs(modifiers) do
+		local mod_func = modifier_functions[mod]
+		if mod_func == nil then
+			return
+		end
+
+		local success, modified_buf = pcall(mod_func, buffer, idx + 1, opt.length)
+		if not success then
+			return
+		end
+
+		buffer = modified_buf
 	end
 
 	return buffer

@@ -3,7 +3,7 @@ local M = {}
 local process_format = require('kommentar-nvim.core').Proccess_pattern
 
 -- run with:
--- :lua print(require('kommentar-nvim.tests.format-test').divider_label_test(from, to, require('kommentar-nvim.formats').formats.*format*, len, *name*)) 
+-- :lua require('kommentar-nvim.tests.format-test').divider_label_test(from, to, require('kommentar-nvim.formats').formats.*format*, len, *name*)
 
 --- test if divider label stays center, len doesnt change etc ...
 --- does this by generating x many dividers adding one char each time its generated
