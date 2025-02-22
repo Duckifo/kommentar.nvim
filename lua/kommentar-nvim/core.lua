@@ -199,7 +199,8 @@ core.Proccess_pattern = function(format, opt)
 
 		local success, modified_buf = pcall(mod_func, buffer, idx + 1, opt.length)
 		if not success then
-			return
+			vim.api.nvim_err_writeln('Failed to transform with modifier: \n'..modified_buf)
+			return 
 		end
 
 		buffer = modified_buf
