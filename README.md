@@ -1,6 +1,6 @@
-<center>
-<h1> kommentar.nvim </h1>
-</center>
+![banner](banner.png)
+
+---
 
 ## about
 
@@ -40,10 +40,21 @@ To create a divider / comment use the `:CreateDivider` user command. Example:\
 #### using lazy
 
 ```lua
+-- for kommentar.nvim
 { 
     'duckifo/kommentar.nvim', 
     cmd = {'CreateDivider', 'KommentarVersion'}, 
     opts = {} 
+}
+
+-- requires luarocks.nvim
+{
+	"vhyrro/luarocks.nvim",
+	priority = 1000,
+	opts = {
+        -- add required dependencie
+		rocks = { 'utf8' }
+	}
 }
 ```
 
