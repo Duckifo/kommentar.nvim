@@ -1,6 +1,7 @@
 -- get version command
 vim.api.nvim_create_user_command('KommentarVersion', function()
-	print('Current Version Of `kommentar.nvim` -- (requires `git`)\n:' .. require('kommentar-nvim.lib.version').get_local_version() )
+	print('Current Version Of `kommentar.nvim` -- (requires `git`)\n:' ..
+		require('kommentar-nvim.lib.version').get_local_version())
 end, {})
 
 -- Create new user command, for creating new divider at current cursor.pos and buffer
@@ -57,16 +58,25 @@ vim.api.nvim_create_user_command("CreateDivider", function(opts)
 end, {
 	nargs = '*',
 	complete = function(arglead, cmdline, cursorpos)
-		local idx = #vim.fn.split(cmdline, ' ')
+		local idx = 0
+		for _ in cmdline:gmatch(" ") do
+			idx = idx + 1
+		end
+
 		if idx == 1 then
 			local options = {}
 			for _, key in ipairs(require('kommentar-nvim.formats').keys) do
 				table.insert(options, key)
 			end
 			table.insert(options, '@dev_format_buffer')
-			return options
+			return vim.tbl_filter(function(opt)
+				return opt:find(arglead, 1, true)
+			end, options)
 		elseif idx == 2 then
-			return { '50', '75', '100', '' }
+			local options = { '50', '75', '100', '' }
+			return vim.tbl_filter(function(opt)
+				return opt:find(arglead, 1, true)
+			end, options)
 		else
 			return {}
 		end
