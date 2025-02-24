@@ -51,7 +51,7 @@ The setup parameter has a few `keys` so lets go over them:
 <
 
                                                            *:CreateDivider*
-    :CreateDivider <format> <length> <label ...>
+    :CreateDivider {format} {length} {label} ...
 
  - `format` -> can be picked from `kommentar-nvim.formats`.formats
         @dev_format_foramt -> format for format "development"
@@ -61,41 +61,50 @@ The setup parameter has a few `keys` so lets go over them:
  - `label` -> every word after length is a part of the note
 
 =========================================================================
- (>- ----<=>---- kommentar.nvim - custom formats / syntax ----<=>--- -<) 
+ (>- --------<=>-------- kommentar.nvim - formats --------<=>------- -<) 
 =========================================================================
-                                      *kommentar-nvim.setup-custom-formats*
-
-To use a custom format you have to set the `dev_format_buffer` to your
-custom format. This might seem scary but its to easy.
-
-`:lua require('kommentar-nvim.dev').format_buffer = ' <your format> '`
-
-then run `:CreateDivider` as usual but with `@dev_format_buffer` as
-your format.
-
-`:CreateDivider @dev_format_buffer <length> <label ...>`
-
-                                            *kommentar-nvim.format-syntax*
+					           *kommentar-nvim.formats*
 
 The format string is what defines the style of the comment, so the 
 comment can scale, adjust to labels (or not) and look different in
 many diffrent ways and forms.  
 
-To do this you need to use a "prefix", initialized by `%`, followed by
-a parameter that hold the data of what to do, `%()` in the param
-things are separated by `:` . First up in the param comes the
-`operator` there are 6 operators in total, 5 for letter repetision and
-one to get values. 
+formats are stored in the `formants` module. To add / get a custom
+format after setup do:
+>lua
+    require('kommentar-nvim.formats').formats[name] = {format}
+    
+    -- then reload keys if you want newly added formats to auto compleate
+    require('kommentar-formats').reload_keys()    
+<
 
- - %(=:`x`:`chars`) -> repeates the `chars` `x` many times
- - %(/=:`x`:`chars`) -> repeates the chars x many procent out of length
- - %(!:`x`:`chars`) -> repeates the chars x many procent out of length 
+				      *kommentar-nvim.setup-custom-formats*
+
+To use a custom format you have to set the `dev_format_buffer` to your
+custom format. This might seem scary but its to easy.
+>lua
+    require('kommentar-nvim.dev').format_buffer = ' <your format> '`
+<
+then run `:CreateDivider` as usual but with `@dev_format_buffer` as
+your format.
+
+    :CreateDivider @dev_format_buffer ...
+
+                                            *kommentar-nvim.format-syntax*
+
+
+more about formats at 
+(|https://github.com/Duckifo/kommentar.nvim?tab=readme-ov-file#format|)
+
+ - %(`=`:`x`:`chars`) -> repeates the `chars` `x` many times
+ - %(`/=`:`x`:`chars`) -> repeates the chars x many procent out of length
+ - %(`!`:`x`:`chars`) -> repeates the chars x many procent out of length 
                           minus label length
- - %(/!:`x`:`chars`) -> repeates the chars x mant procent out of length
+ - %(`/!`:`x`:`chars`) -> repeates the chars x mant procent out of length
                            minus constant chars
- - %(?:`x`:`chars`) -> repeates the chars x many procent out of leanth
+ - %(`?`:`x`:`chars`) -> repeates the chars x many procent out of leanth
                           minus label length minus constant chars
- - %(c:`name`:`chars`?) -> "constants", chars not always needed, only if
+ - %(`c`:`name`:`chars`?) -> "constants", chars not always needed, only if
                               value ends up as int
     -  `len` -> length no questions asked             (   char   )
     -  `label` -> label text, adds label to buffer    (  buffer  )
@@ -104,31 +113,8 @@ one to get values.
 `X` can be for either repeating my procentage or right of. The thing being
 repeated is the char. So:
     - `%(=:10:a)` would result in 10 a:s
-    - %(c:label) would result in the label being written to the buffer
+    - `%(c:label)` would result in the label being written to the buffer
     - ...
-
-The syntax is built on a princable that theres `constant_chars` and
-`non_constand_chars`, constant_chars `constant_chars` are the "free"
-characters in the string eg:
-"aaa%(=:3:b)" -> 3 constant_chars even tough the output is "aaabbb" (6)
-this is becouse 3 of those chars were non_constant 
-AKA got "generated" during parsing.
-
-lines are separated with `,` each line has its own constants, and non.
-This is well if you want to create multiline comments
-
-
-{modifiers} are functions that edit the comment after it been generated
-eg, the overflow modifier that ensures that the comment is as long
-as it should be by looking at the final output.
-
-Modifiers are used in the parameter at the end, and is separated by `|`
-So it might look something like this: `%(?:50:~|overflow)` to add overflow
-to a parameter.
-
-mods: 
-    - overflow -> edits buffer to make the selected parameter longer
-      or shorter. (adds / removes characters)
 
 =========================================================================
                                         *kommentar-nvim.formating-examples*
@@ -181,6 +167,13 @@ WARNING: Make sure to add a `tests` directory to plugin root,
 `format-test`:
 The format test can be found at `lua/kommentar-nvim/tests/format-test.lua`
 Used to test how format reacts to label len.
+>lua
+    require('kommentar-nvim.tests.format-test').divider_label_test( {from} , {to} , {format} , {length}) 
+<
+
+
+
+
 
 
 vim:tw=78:ts=8:noet:ft=help:norl:

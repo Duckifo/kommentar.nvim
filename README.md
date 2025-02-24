@@ -44,17 +44,18 @@ To create a divider / comment use the `:CreateDivider` user command. Example:\
 { 
     'duckifo/kommentar.nvim', 
     cmd = {'CreateDivider', 'KommentarVersion'}, 
+    dependencies = { 'vhyrro/luarocks.nvim' },
     opts = {} 
 }
 
 -- requires luarocks.nvim
 {
-	"vhyrro/luarocks.nvim",
-	priority = 1000,
-	opts = {
+    "vhyrro/luarocks.nvim",
+    priority = 1000,
+    opts = {
         -- add required dependencie
-		rocks = { 'utf8' }
-	}
+        rocks = { 'utf8' }
+    }
 }
 ```
 
@@ -62,7 +63,7 @@ To create a divider / comment use the `:CreateDivider` user command. Example:\
 ```lua
 {
     -- formats to add to the `CreateDivider` command at setup
-    foramt = { foramt_name = '<format>' },
+    format = { format_name = '<format>' },
     -- if `commentString` should be on both sides
     comment_on_both_sides = true,
     -- the length to use if failed to convert passed length
@@ -79,7 +80,7 @@ You can load formats into the formats module either from the setup config
 or you can load it into the formats module anytime by doing:
 ```lua
 require('kommentar-nvim.formats').formats[name] = format
-require('kommentar-nvim.formats').reload_tags()
+require('kommentar-nvim.formats').reload_keys()
 ```
 
 ## generall
@@ -92,7 +93,7 @@ The following arguments are up to the operator to decide.
 Before we go over what each operator does, you have to know what `constant` & `generated` characers are. 
 ```
 constant characters
-↓			↓--↓
+↓           ↓--↓
 #%(/!:100:=)abcd
  ↑---------↑
 The characters that will be generated 
@@ -106,8 +107,8 @@ here will be generated characters.
 - `%(/!:*x:*char)` - repeats char x many percent out of length minus constant chars.
 - `%(?:*x:*char)` - repeats char x many percent out of length minus label length and constant chars.
 - `%(c:*name:*char?)` - either writes a string to the buffer ( like the label ) or repeats the char !(char is not needed if it only writes to buffer).
-	- `label` - writes the label to the buffer
-	- `/label` - repeats the char as many times as the labels length
+    - `label` - writes the label to the buffer
+    - `/label` - repeats the char as many times as the labels length
 
 ### modifiers
 Modifiers change the buffer after its been generated. To use a modifier you separate a operator param with `|` might look like this `%(?:50:=|*mod-name)`

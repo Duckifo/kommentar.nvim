@@ -1,7 +1,9 @@
 :CreateDivider	kommentar.txt	/*:CreateDivider*
 kommentar-nvim.format-syntax	kommentar.txt	/*kommentar-nvim.format-syntax*
 kommentar-nvim.formating-examples	kommentar.txt	/*kommentar-nvim.formating-examples*
+kommentar-nvim.formats	kommentar.txt	/*kommentar-nvim.formats*
 kommentar-nvim.general	kommentar.txt	/*kommentar-nvim.general*
 kommentar-nvim.getting-started	kommentar.txt	/*kommentar-nvim.getting-started*
 kommentar-nvim.setup-custom-formats	kommentar.txt	/*kommentar-nvim.setup-custom-formats*
+kommentar-nvim.testing-formats	kommentar.txt	/*kommentar-nvim.testing-formats*
 kommentar.nvim.txt	kommentar.txt	/*kommentar.nvim.txt*
