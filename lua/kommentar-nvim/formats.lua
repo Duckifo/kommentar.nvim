@@ -39,11 +39,11 @@ M.formats = {
 	-- single lines
 	simple_single = ' %(?:50:=) %(c:label) %(?:50:=|overflow) ',
 	def_single = ' <=:-%(?:50:~) ) %(c:label) ( %(?:50:~|overflow)-:=> ',
-	free_single = ' (>- %(?:25:-)<=>%(?:25.05:-) %(c:label) %(?:25.05:-)<=>%(?:25:-|overflow) -<) ',
+	free_single = ' (>- %(?:25:-)<=>%(?:25:-) %(c:label) %(?:25:-)<=>%(?:25:-|overflow) -<) ',
 	round_single = ' %(?:50: )%(c:label)%(?:50: |overflow) ',
 
 	-- triple
-	def_triple = ' <===:-%(/!:100:~)-:===> , <:-%(?:51.05: )( %(c:label) )%(?:50: |overflow)-:> , <===:-%(/!:100:~)-:===> ',
+	def_triple = ' <===:-%(/!:100:~)-:===> , <:-%(?:51: )( %(c:label) )%(?:50: |overflow)-:> , <===:-%(/!:100:~)-:===> ',
 	square_triple = ' ┌%(/!:100:─)┐ , │%(?:50: )%(c:label)%(?:50: |overflow)│ , └%(/!:100:─)┘ ', 
 	round_triple = ' ╭%(/!:100:─)╮ , │%(?:50: )%(c:label)%(?:50: |overflow)│ , ╰%(/!:100:─)╯ '
 }

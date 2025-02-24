@@ -111,8 +111,8 @@ core.Proccess_pattern = function(format, opt)
 		tokens[format_idx] = line_tokens
 	end
 
-	-- Get the commentstring or
-	local comment_string = vim.bo.commentstring:gsub(' %%s', '')
+	-- Get the commentstring
+	local comment_string = vim.bo.commentstring:gsub(' %%s', ''):gsub('%*%%s%*', '')
 
 	-- [buf_idx] = mod
 	-- used to edit string after generated, eg `overflow`
