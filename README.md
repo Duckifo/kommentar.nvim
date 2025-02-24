@@ -2,7 +2,7 @@
 
 ---
 
-## about
+# about
 
 kommentar.nvim is a plugin for neovim that can split up
 code by creating long ascii art comments with labels. These comments are generated 
@@ -24,7 +24,7 @@ from `formats` which defines the style of the comment.
  .. example format used above:\
  ` <=:-%(?:50:~) ) %(c:label) ( %(?:50:~|overflow)-:=> `
 
-## usage
+# usage
 
 To create a divider / comment use the `:CreateDivider` user command. Example:\
 `:CreateDivider <format> <length> <label ...>`
@@ -35,7 +35,7 @@ To create a divider / comment use the `:CreateDivider` user command. Example:\
 
  more information: `:h :CreateDivider`
 
-## install
+# install
 
 #### using lazy
 
@@ -70,17 +70,51 @@ To create a divider / comment use the `:CreateDivider` user command. Example:\
 }
 ```
 
-## format syntax
+# Format
+Formats defines the style of the divider, where the label should be, what characters to use etc...
 
-There are 2 types of characters `constant` and `generated` chars, constant chars are the chars that arent generated, this will make sense if you read the bellow! 
+### load
 
-generated chars come from a macro / param, this duplicates characters or writes a string to the buffer,
-a macro is initialized by `%` then followed by a parentheses with its coresponding closing parentheses, like this: `%()`
-In the paren the first option is always a `operator`. The operator is followed
-by a number in most cases, the number can corespond to how many times to repeat the char or how many percent out of length to repeat. Then followed by a
-character / characters, these are the ones being repeated. Each of these are separated by `:`. It could look something like this: `%(?:50:~)`.
+You can load formats into the formats module either from the setup config
+or you can load it into the formats module anytime by doing:
+```lua
+require('kommentar-nvim.formats').formats[name] = format
+require('kommentar-nvim.formats').reload_tags()
+```
 
-But lets pick a simple one `=` it repeats the character as many times as the number. For example\
-`%(=:10:=)` would result in `==========` AKA 10 eq signs.
+## generall
 
-There is info about what each operator does, run `:h kommentar-nvim.format-syntax`
+They follow simple operators to function, these operators repeat character or write whole strings to the buffer. 
+
+To use a operator you prefix a parameter with `%` this can look something like this `%(arg1:arg2:arg3)` as you can see the arguments are separated by `:`. Argument 1 in this param is always the operator ( more down bellow ).
+The following arguments are up to the operator to decide.
+
+Before we go over what each operator does, you have to know what `constant` & `generated` characers are. 
+```
+constant characters
+↓			↓--↓
+#%(/!:100:=)abcd
+ ↑---------↑
+The characters that will be generated 
+here will be generated characters.
+```
+
+### operators
+- `%(=:*x:*char)` - repeats char x many times
+- `%(/=:*x:*char)` - repeats char x many percent out of length
+- `%(!:*x:*char)` - repeats char x many percent out of length minus label length
+- `%(/!:*x:*char)` - repeats char x many percent out of length minus constant chars.
+- `%(?:*x:*char)` - repeats char x many percent out of length minus label length and constant chars.
+- `%(c:*name:*char?)` - either writes a string to the buffer ( like the label ) or repeats the char !(char is not needed if it only writes to buffer).
+	- `label` - writes the label to the buffer
+	- `/label` - repeats the char as many times as the labels length
+
+### modifiers
+Modifiers change the buffer after its been generated. To use a modifier you separate a operator param with `|` might look like this `%(?:50:=|*mod-name)`
+
+The `overflow` modifier is really important, lets go over the problem it solves first.
+
+In some of the equations it handles float numbers, wich doent mix well with repeating characters, as you cant have half a character. So without the overflow modifier the divider wont take the right length when label length is wrong. This might not be a problem in single line comments but in multiline comments this result in awfullness.
+
+The fix is using the overflow modifier. It will either make the generated chars of the operator longer or shorter. It might look like this:
+`%(?:50:=|overflow)`
