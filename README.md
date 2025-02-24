@@ -1,5 +1,7 @@
 ![banner](banner.png)
 
+![preview](preview.gif)
+
 ---
 
 # about
