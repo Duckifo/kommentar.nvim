@@ -11,7 +11,7 @@ mods['overflow'] = function(buf, idx, len)
 	local char = utf8.sub(buf, idx, idx)
 
 	-- get the diff between wanted len and current len
-	local line_len = utf8.len(split(buf, '\n')[line_idx]) - (utf8.len(vim.bo.commentstring:gsub(' %%s', ''):gsub('%*%%s%*','')) or 0) * 2
+	local line_len = utf8.len(split(buf, '\n')[line_idx]) - (vim.bo.commentstring:gsub(' %%s', ''):gsub('%*%%s%*',''):len() or 0) * 2
 	local len_diff = len - line_len
 
 	-- nothing to do so return buf as is
