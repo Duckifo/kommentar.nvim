@@ -12,8 +12,9 @@ local err_msg = require('kommentar-nvim.lib.error').err_msgs
 
 local utf8 = require('utf8')
 
-local modifier_functions = require('kommentar-nvim.modifiers')
-local operator_functions = require('kommentar-nvim.operators')
+local modifier_functions = require('kommentar-nvim.parsing.modifiers')
+local operator_functions = require('kommentar-nvim.parsing.operators')
+
 
 ---@class Proccess_Opt
 ---@field label string
