@@ -1,9 +1,3 @@
--- get version command
-vim.api.nvim_create_user_command('KommentarVersion', function()
-	print('Current Version Of `kommentar.nvim` -- (requires `git`)\n:' ..
-		require('kommentar-nvim.lib.version').get_local_version())
-end, {})
-
 -- Create new user command, for creating new divider at current cursor.pos and buffer
 vim.api.nvim_create_user_command("CreateDivider", function(opts)
 	--- get from index to index and put into a string
