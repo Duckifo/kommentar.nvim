@@ -1,4 +1,6 @@
 local split = vim.fn.split
+local get_commentstring = require('kommentar-nvim.lib.utils').get_commentstring
+
 local utf8 = require('utf8')
 
 --- Used for modifing buffer after uts proccessed, for mods like overflow that need total len
@@ -11,7 +13,7 @@ mods['overflow'] = function(buf, idx, len)
 	local char = utf8.sub(buf, idx, idx)
 
 	-- get the diff between wanted len and current len
-	local line_len = utf8.len(split(buf, '\n')[line_idx]) - (vim.bo.commentstring:gsub(' %%s', ''):gsub('%*%%s%*',''):len() or 0) * 2
+	local line_len = utf8.len(split(buf, '\n')[line_idx]) - (get_commentstring():len() or 0) * 2
 	local len_diff = len - line_len
 
 	-- nothing to do so return buf as is

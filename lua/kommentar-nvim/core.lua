@@ -7,6 +7,8 @@ local Config = require('kommentar-nvim.config').config
 -- import utils
 local split = vim.fn.split
 local find_closing_char = require('kommentar-nvim.lib.utils').find_closing_char
+local get_commentstring = require('kommentar-nvim.lib.utils').get_commentstring
+
 local report = require('kommentar-nvim.lib.error').report
 local err_msg = require('kommentar-nvim.lib.error').err_msgs
 
@@ -113,7 +115,7 @@ core.Proccess_pattern = function(format, opt)
 	end
 
 	-- Get the commentstring
-	local comment_string = vim.bo.commentstring:gsub(' %%s', ''):gsub('%*%%s%*', '')
+	local comment_string = get_commentstring()
 
 	-- [buf_idx] = mod
 	-- used to edit string after generated, eg `overflow`
