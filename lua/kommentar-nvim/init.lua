@@ -33,7 +33,7 @@ kommentar_nvim.setup = function(_Config)
 
 	for key, value in pairs(_Config) do
 		if not default_config[key] then 
-			print("[smc.nvim]: non valid key `", key, "` found in passed config!")
+			print("[kommentar.nvim]: non valid key `", key, "` found in passed config!")
 			goto continue
 		end
 
