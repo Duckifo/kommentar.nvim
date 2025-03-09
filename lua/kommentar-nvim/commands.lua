@@ -48,7 +48,7 @@ vim.api.nvim_create_user_command("CreateDivider", function(opts)
 	end
 
 	-- Create divider
-	require('kommentar-nvim.core').create_divider_write_buf(label, length, format)
+	require('kommentar-nvim.core').creatediv_write_curbuf(label, length, format)
 end, {
 	nargs = '*',
 	complete = function(arglead, cmdline, cursorpos)

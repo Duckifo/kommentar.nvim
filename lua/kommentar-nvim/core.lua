@@ -17,7 +17,6 @@ local utf8 = require('utf8')
 local modifier_functions = require('kommentar-nvim.parsing.modifiers')
 local operator_functions = require('kommentar-nvim.parsing.operators')
 
-
 ---@class Proccess_Opt
 ---@field label string
 ---@field length integer
@@ -31,13 +30,13 @@ core.Proccess_pattern = function(format, opt)
 	-- (Spliting it up before being parsed)
 
 	-- Format gets split up into a table separated by `%(param)`
-	-- tokenized_format: {'<==','%(param)','==>'}
 
 	-- Start by spliting format into lines separated by `,`
 	local format_lines = split(format, ',')
 
 	-- For parsing later
 	-- Amount of characters that are not added with this proccess
+	-- Indexed by line { [1]=5 } -> line 1 has 5 constant chars
 	local constant_characters = {}
 
 	-- `tokens` the output of Tokenizing format:
@@ -168,7 +167,7 @@ core.Proccess_pattern = function(format, opt)
 
 			---@type Operators_opt
 			local operator_opt = {
-				const_chars = constant_characters[i],
+			const_chars = constant_characters[i],
 				pro_opt = opt
 			}
 
@@ -186,7 +185,7 @@ core.Proccess_pattern = function(format, opt)
 			::continue::
 		end
 		-- Add comment on end if option is true
-		if Config.comment_on_both_sides then
+		if Config.user_config.comment_on_both_sides then
 			buffer = buffer .. comment_string
 		end
 		-- Add new line and comment_string
@@ -215,10 +214,13 @@ end
 ---@param label string
 ---@param length integer
 ---@param format string
-core.create_divider_write_buf = function(label, length, format)
+---@param buf integer
+---@param start integer
+---@param end_ integer
+core.creatediv_write_buf = function (label, length, format, buf, start, end_)
 	-- make sure arguments are set well and done
 	label = label or ''
-	length = length or Config.default_length
+	length = length or Config.user_config.default_length
 	format = format or 'Somthing went wrong :( ... your problem now >:)'
 
 	-- Can be used in format by doing %(c:`name`)
@@ -242,12 +244,23 @@ core.create_divider_write_buf = function(label, length, format)
 	-- return if failed
 	if comment_buffer == nil then return end
 
+	-- write the `comment_buffer` to neovims buffer at current `row`
+	vim.api.nvim_buf_set_lines(buf, start, end_, false, split(comment_buffer, '\n'))
+end
+
+---@param label string
+---@param length integer
+---@param format string
+core.creatediv_write_curbuf = function(label, length, format)
 	-- Get neovim buffer and current `colum` and `row`
 	local Current_nvim_buffer = vim.api.nvim_get_current_buf()
 	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 
-	-- write the `comment_buffer` to neovims buffer at current `row`
-	vim.api.nvim_buf_set_lines(Current_nvim_buffer, row, row, false, split(comment_buffer, '\n'))
+	core.creatediv_write_buf(label, length, format, Current_nvim_buffer, row, row)
+end
+
+core.preview_format = function(label, lenght, format)
+	
 end
 
 return core
