@@ -12,7 +12,9 @@ local default_config = {
 	format = {},
 	comment_on_both_sides = true,
 	default_length = 50,
+
 	reindent = true,
+	respect_autoindent = true,
 
 	parsing = {
 		modifiers = {},

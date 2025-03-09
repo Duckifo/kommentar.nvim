@@ -256,6 +256,8 @@ core.creatediv_write_buf = function(label, length, format, buf, start, end_)
 	vim.api.nvim_buf_set_lines(buf, start, end_, false, split(comment_buffer, '\n'))
 
 	-- reindent written lines
+
+	if Config.user_config.respect_autoindent and not vim.bo.autoindent then return end
 	if Config.user_config.reindent then
 		local comment_lines = utf8.gmatch(comment_buffer, '\n')
 		local idx = 1
