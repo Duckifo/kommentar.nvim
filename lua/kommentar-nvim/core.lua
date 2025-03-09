@@ -128,17 +128,19 @@ core.Proccess_pattern = function(format, opt)
 		--[[ token format example:
 			{'====','%(param)','abcd'}
 		]]
+
+		local line_buffer = ''
 		for j, token in pairs(tokenized_line) do
 			-- skip if token cant be parsed
 
 			if utf8.sub(token, 1, 1) ~= '%' then
-				buffer = buffer .. token
+				line_buffer = line_buffer .. token
 				goto continue
 			end
 
 			---@type Error_info
 			local error_info = {
-				index = utf8.len(buffer) + 2,
+				index = utf8.len(line_buffer) + 2,
 				line_nr = i,
 				line = format_lines[i]
 			}
@@ -156,7 +158,7 @@ core.Proccess_pattern = function(format, opt)
 
 			-- add modifier to moduifier table, so it can be used later
 			for _, modifier in pairs(modifier_parameter) do
-				modifiers[utf8.len(buffer)] = modifier
+				modifiers[utf8.len(line_buffer)] = modifier
 			end
 
 			-- Check if operator is existant
@@ -167,29 +169,32 @@ core.Proccess_pattern = function(format, opt)
 
 			---@type Operators_opt
 			local operator_opt = {
-			const_chars = constant_characters[i],
+				const_chars = constant_characters[i],
 				pro_opt = opt
 			}
 
 			-- Call operators function
-			local result, err = operator_functions[operator]( operator_parameter, operator_opt )
+			local result, err = operator_functions[operator](operator_parameter, operator_opt)
 
 			if result == nil then
 				report(error_info, err or 'unknown error')
 				return
 			end
 
-			-- Write output to buffer
-			buffer = buffer .. result
+			-- Write output to line_buffer
+			line_buffer = line_buffer .. result
 
 			::continue::
 		end
-		-- Add comment on end if option is true
-		if Config.user_config.comment_on_both_sides then
-			buffer = buffer .. comment_string
+
+		-- write line buffer into buffer with commentstring
+		-- Does commentstring use %s or not? eg: c='/*%s*/'
+		if not comment_string:find('%%s') then
+			buffer = buffer ..
+			comment_string .. line_buffer .. (Config.user_config.comment_on_both_sides and comment_string or '') .. '\n'
+		else
+			buffer = buffer .. string.format(comment_string, line_buffer)
 		end
-		-- Add new line and comment_string
-		buffer = buffer .. '\n' .. (i == #tokens and '' or comment_string)
 	end
 
 	-- apply modifiers
@@ -201,8 +206,8 @@ core.Proccess_pattern = function(format, opt)
 
 		local success, modified_buf = pcall(mod_func, buffer, idx + 1, opt.length)
 		if not success then
-			vim.api.nvim_err_writeln('Failed to transform with modifier: \n'..modified_buf)
-			return 
+			vim.api.nvim_err_writeln('Failed to transform with modifier: \n' .. modified_buf)
+			return
 		end
 
 		buffer = modified_buf
@@ -217,7 +222,7 @@ end
 ---@param buf integer
 ---@param start integer
 ---@param end_ integer
-core.creatediv_write_buf = function (label, length, format, buf, start, end_)
+core.creatediv_write_buf = function(label, length, format, buf, start, end_)
 	-- make sure arguments are set well and done
 	label = label or ''
 	length = length or Config.user_config.default_length
@@ -260,7 +265,7 @@ core.creatediv_write_curbuf = function(label, length, format)
 end
 
 core.preview_format = function(label, lenght, format)
-	
+
 end
 
 return core

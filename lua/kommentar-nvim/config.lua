@@ -22,7 +22,6 @@
 ---@field user_config User_Config 
 ---@field plugin_root string Path to plugin root directory
 
-
 --                                           Global config                                          --
 --- global config
 ---@type { config: Config }
