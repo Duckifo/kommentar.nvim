@@ -4,7 +4,7 @@
  -[-] config fetures
     -[-] user (op & mod) functions
     -[x] user controlled comment strings
-    -[-] ad reindent feat
+    -[x] ad reindent feat
     -[-] add docs for the above
 
  - [-] add support for %s in commenstring for better support

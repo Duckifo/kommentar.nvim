@@ -249,12 +249,22 @@ core.creatediv_write_buf = function(label, length, format, buf, start, end_)
 
 	-- Proccess and get the `comment_buffer`
 	local comment_buffer = core.Proccess_pattern(format, opt)
-
 	-- return if failed
 	if comment_buffer == nil then return end
 
 	-- write the `comment_buffer` to neovims buffer at current `row`
 	vim.api.nvim_buf_set_lines(buf, start, end_, false, split(comment_buffer, '\n'))
+
+	-- reindent written lines
+	if Config.user_config.reindent then
+		local comment_lines = utf8.gmatch(comment_buffer, '\n')
+		local idx = 1
+		for _ in comment_lines do
+			vim.api.nvim_win_set_cursor(0, {start + idx, 0})
+			vim.cmd('normal! ==')
+			idx = idx + 1
+		end
+	end
 end
 
 ---@param label string
