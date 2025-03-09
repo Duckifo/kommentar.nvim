@@ -3,7 +3,7 @@
 ## minor
  -[-] config fetures
     -[-] user (op & mod) functions
-    -[-] user controlled comment strings
+    -[x] user controlled comment strings
     -[-] ad reindent feat
     -[-] add docs for the above
 

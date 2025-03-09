@@ -1,4 +1,5 @@
 local utils = {}
+local Config = require('kommentar-nvim.config').config
 local utf8 = require('utf8')
 
 --- Searches for closing char from the start_idx
@@ -25,22 +26,25 @@ function utils.find_closing_char(start_idx, end_char, string)
 end
 
 --- Get unmodified commentstring from `vim.bo.commentstring`
-function utils.get_commentstring()
-	-- the patterns to :gsub the commentstring with
-	-- TODO: find a better way
-	local lua_gsub_patterns = {
-		' %%s', -- for lua, py ...
-		' %*%%s%*', -- for c
-		'%%s', -- for rust
-	}
+function utils.get_commentstring()	local commentstring = vim.bo.commentstring
+
+	-- look for user commentstring
+	if Config.user_config.comment_strings[vim.bo.filetype] then
+		return Config.user_config.comment_strings[vim.bo.filetype]
+	end
 
 	local result = ''
+	-- the patterns to :gsub the commentstring with
+	-- not in use right now
+	local lua_gsub_patterns = {
+		' %%s', -- for lua, py ...
+	}
 
 	-- find the right pattern and apply it
 	for _, gsub_pattern in pairs(lua_gsub_patterns) do
-		local commentstring, n = string.gsub(vim.bo.commentstring, gsub_pattern, '')
+		local formated_commentstring, n = string.gsub(vim.bo.commentstring, gsub_pattern, '')
 		if n > 0 then
-			result = commentstring
+			result = formated_commentstring
 			break
 		end
 	end

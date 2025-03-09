@@ -116,19 +116,21 @@ core.Proccess_pattern = function(format, opt)
 	-- Get the commentstring
 	local comment_string = get_commentstring()
 
-	-- [buf_idx] = mod
-	-- used to edit string after generated, eg `overflow`
-	-- edits string from module, `modifiers.lua`
-	local modifiers = {}
 
 	-- Parsing format && Evaluating
 	-- Turn the tokenized_buffer into the finnished string now!
-	local buffer = comment_string
+	local buffer = ''
 	for i, tokenized_line in pairs(tokens) do
 		--[[ token format example:
 			{'====','%(param)','abcd'}
 		]]
 
+		-- [buf_idx] = mod
+		-- used to edit string after generated, eg `overflow`
+		-- edits string from module, `modifiers.lua`
+		local modifiers = {}
+
+		-- the buffer the current line
 		local line_buffer = ''
 		for j, token in pairs(tokenized_line) do
 			-- skip if token cant be parsed
@@ -140,7 +142,7 @@ core.Proccess_pattern = function(format, opt)
 
 			---@type Error_info
 			local error_info = {
-				index = utf8.len(line_buffer) + 2,
+				index = utf8.len(line_buffer .. buffer) + 2,
 				line_nr = i,
 				line = format_lines[i]
 			}
@@ -153,11 +155,11 @@ core.Proccess_pattern = function(format, opt)
 			local operator = operator_parameter[1]
 
 			-- get modifiers, split by `|`
-			local modifier_parameter = parameter
-			modifier_parameter[1] = nil
+			local modifier_parameters = parameter
+			modifier_parameters[1] = nil
 
 			-- add modifier to moduifier table, so it can be used later
-			for _, modifier in pairs(modifier_parameter) do
+			for _, modifier in pairs(modifier_parameters) do
 				modifiers[utf8.len(line_buffer)] = modifier
 			end
 
@@ -187,31 +189,33 @@ core.Proccess_pattern = function(format, opt)
 			::continue::
 		end
 
+		-- apply modifiers
+		for idx, mod in pairs(modifiers) do
+			local mod_func = modifier_functions[mod]
+			if mod_func == nil then
+				return
+			end
+
+			local success, modified_buf = pcall(mod_func, line_buffer, idx + 1, opt.length)
+			if not success then
+				vim.api.nvim_err_writeln('Failed to transform with modifier: \n' .. modified_buf)
+				return
+			end
+
+			line_buffer = modified_buf
+		end
+
 		-- write line buffer into buffer with commentstring
 		-- Does commentstring use %s or not? eg: c='/*%s*/'
 		if not comment_string:find('%%s') then
 			buffer = buffer ..
-			comment_string .. line_buffer .. (Config.user_config.comment_on_both_sides and comment_string or '') .. '\n'
+				comment_string ..
+				line_buffer .. (Config.user_config.comment_on_both_sides and comment_string or '') .. '\n'
 		else
-			buffer = buffer .. string.format(comment_string, line_buffer)
+			buffer = buffer .. string.format(comment_string .. '\n', line_buffer)
 		end
 	end
 
-	-- apply modifiers
-	for idx, mod in pairs(modifiers) do
-		local mod_func = modifier_functions[mod]
-		if mod_func == nil then
-			return
-		end
-
-		local success, modified_buf = pcall(mod_func, buffer, idx + 1, opt.length)
-		if not success then
-			vim.api.nvim_err_writeln('Failed to transform with modifier: \n' .. modified_buf)
-			return
-		end
-
-		buffer = modified_buf
-	end
 
 	return buffer
 end
