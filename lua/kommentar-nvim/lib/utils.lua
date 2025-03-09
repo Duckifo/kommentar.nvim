@@ -37,7 +37,7 @@ function utils.get_commentstring()	local commentstring = vim.bo.commentstring
 	-- the patterns to :gsub the commentstring with
 	-- not in use right now
 	local lua_gsub_patterns = {
-		' %%s', -- for lua, py ...
+		' ', -- to remove unecesaty spaces
 	}
 
 	-- find the right pattern and apply it
