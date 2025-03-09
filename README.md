@@ -24,7 +24,7 @@ from `formats` which defines the style of the comment.
 ```
 
  .. example format used above:\
- ` <=:-%(?:50:~) ) %(c:label) ( %(?:50:~|overflow)-:=> `
+ ` ╭%(/!:100:─)╮ , │%(?:50: )%(c:label)%(?:50: |overflow)│ , ╰%(/!:100:─)╯ `
 
 # usage
 
@@ -65,11 +65,25 @@ To create a divider / comment use the `:CreateDivider` user command. Example:\
 ```lua
 {
     -- formats to add to the `CreateDivider` command at setup
-    format = { format_name = '<format>' },
+    format = { 
+        format_name = '<format>' --example
+    },
     -- if `commentString` should be on both sides
     comment_on_both_sides = true,
     -- the length to use if failed to convert passed length
     default_length = 50,
+
+    -- should comment be on same indentation as other code
+    reindent = true,
+    -- should it not reindent if autoindent is turned off
+    respect_autoindent = true,
+
+    -- user commentstrings to replace the normal ones.
+    -- use %s for where the comment content should be
+    -- or just type commentstring without %s and it will be copied to both sides
+    comment_strings = {
+        c = '/*%s*/', --example
+    },
 }
 ```
 
